@@ -1,0 +1,42 @@
+/* ============================================================
+   PDM CI — CONTACT
+   ============================================================ */
+
+.contact-hero { padding:72px 0; background:linear-gradient(135deg,#fff 0%,#f7faf8 100%); border-bottom:1px solid var(--line); }
+.contact-hero-grid { display:grid; grid-template-columns:1fr .75fr; gap:60px; align-items:center; }
+.contact-hero p:not(.eyebrow) { max-width:700px; color:var(--muted); font-size:17px; }
+.contact-highlight { display:flex; align-items:center; gap:18px; padding:24px; background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); }
+.contact-icon { width:48px; height:48px; display:grid; place-items:center; background:var(--orange); color:#fff; border-radius:12px; font-size:25px; font-weight:800; }
+.contact-highlight strong { font-size:15px; }
+.contact-highlight p { color:var(--muted); font-size:12px; margin:4px 0 0; }
+.contact-section { padding:80px 0; }
+.contact-layout { display:grid; grid-template-columns:.8fr 1.2fr; gap:60px; align-items:start; }
+.contact-info h2 { font-size:34px; margin:8px 0 12px; }
+.contact-info > p:not(.eyebrow) { color:var(--muted); }
+.contact-info-card { border-top:1px solid var(--line); padding:17px 0; }
+.contact-info-card span, .contact-info-card small { display:block; color:var(--muted); font-size:11px; }
+.contact-info-card strong { display:block; margin:3px 0; font-size:14px; }
+.contact-info .btn { margin-top:12px; }
+.contact-form { border:1px solid var(--line); border-radius:22px; padding:30px; box-shadow:var(--shadow); background:#fff; }
+.form-header h2 { margin:7px 0; font-size:30px; }
+.form-header p:not(.eyebrow) { color:var(--muted); font-size:13px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+.form-group { margin-top:17px; }
+.form-group label { display:block; font-size:12px; font-weight:800; margin-bottom:7px; }
+.form-group input, .form-group select, .form-group textarea {
+  width:100%; border:1px solid var(--line); border-radius:10px; padding:12px 13px; background:#fff; color:var(--ink); font:inherit; outline:none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(29,138,75,.08); }
+.consent-line { display:flex; gap:10px; align-items:flex-start; margin:18px 0; color:var(--muted); font-size:12px; }
+.consent-line input { margin-top:4px; }
+.form-feedback { margin-top:14px; font-size:13px; min-height:20px; }
+.form-feedback.success { color:var(--green-dark); }
+@media (max-width:900px) {
+  .contact-hero-grid, .contact-layout { grid-template-columns:1fr; }
+}
+@media (max-width:620px) {
+  .contact-hero, .contact-section { padding:52px 0; }
+  .form-row { grid-template-columns:1fr; }
+  .contact-form { padding:22px; }
+  .contact-form .btn { width:100%; }
+}

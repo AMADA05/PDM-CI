@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Services — Plateforme Digitale MEDEQUIP Côte d'Ivoire.">
+  <title>Services | PDM CI</title>
+
+  <!-- CSS GLOBAL : conserver celui de ta V0.2 -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <!-- CSS SPÉCIFIQUE À LA PAGE SERVICES -->
+  <link rel="stylesheet" href="../assets/css/services.css">
+</head>
+
+<body>
+
+  <!-- =========================================================
+       TOPBAR — IDENTIQUE AUX AUTRES PAGES
+       ========================================================= -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>MEDEQUIP Côte d'Ivoire</span>
+      <div class="topbar-links">
+        <a href="showrooms.html">Nos showrooms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       EN-TÊTE / NAVIGATION
+       ========================================================= -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-wrap">
+
+      <a class="brand" href="../index.html" aria-label="MEDEQUIP CI - Accueil">
+        <img
+          class="brand-logo"
+          src="../assets/images/logo-medequip-ci.png"
+          alt="Logo MEDEQUIP Côte d'Ivoire"
+        >
+      </a>
+
+      <!-- Menu mobile -->
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Ouvrir le menu"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Menu principal -->
+      <nav class="main-nav" id="mainNav">
+        <a href="../index.html">Accueil</a>
+        <a href="catalogue.html">Produits</a>
+        <a class="active" href="services.html">Services</a>
+        <a href="showrooms.html">Showrooms</a>
+        <a href="actualites.html">Actualités</a>
+        <a href="contact.html">Contact</a>
+        <a class="btn btn-orange nav-cta" href="demande-devis.html">
+          Demander un devis
+        </a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main>
+
+    <!-- =========================================================
+         HERO SERVICES
+         ========================================================= -->
+    <section class="services-hero">
+      <div class="container services-hero-grid">
+
+        <div>
+          <p class="eyebrow">
+            <i></i> SERVICES MEDEQUIP CI
+          </p>
+
+          <h1>
+            Plus qu'un équipement,<br>
+            <span>un accompagnement.</span>
+          </h1>
+
+          <p class="services-lead">
+            De l'identification du besoin à l'installation, la maintenance
+            et l'accompagnement des utilisateurs, MEDEQUIP CI propose un
+            ensemble de services autour des équipements et solutions de santé.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-orange btn-large" href="demande-devis.html">
+              Demander un devis <span>→</span>
+            </a>
+            <a class="btn btn-outline btn-large" href="contact.html">
+              Nous contacter
+            </a>
+          </div>
+        </div>
+
+        <!-- Bloc visuel -->
+        <div class="services-hero-card">
+          <div class="service-card-label">ACCOMPAGNEMENT</div>
+
+          <div class="service-orbit">
+            <div class="orbit-center">+</div>
+            <span class="orbit-item orbit-1">Installation</span>
+            <span class="orbit-item orbit-2">Maintenance</span>
+            <span class="orbit-item orbit-3">Formation</span>
+            <span class="orbit-item orbit-4">Conseil</span>
+          </div>
+
+          <div class="hero-card-footer">
+            <strong>Une approche orientée terrain</strong>
+            <span>Phase 1 — Démonstration</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         INTRODUCTION
+         ========================================================= -->
+    <section class="services-intro">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">NOTRE APPROCHE</p>
+            <h2>Des services pensés autour de vos besoins.</h2>
+          </div>
+          <p class="section-heading-text">
+            Les services présentés ci-dessous sont des données de démonstration
+            pour la Phase 1. Ils pourront être enrichis et administrés depuis
+            le futur système PDM CI.
+          </p>
+        </div>
+
+        <!-- Les cartes sont générées par services.js -->
+        <div id="services-grid" class="services-grid"></div>
+
+        <div id="services-empty" class="services-empty" hidden>
+          Aucun service ne correspond à votre recherche.
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PARCOURS DE SERVICE
+         ========================================================= -->
+    <section class="services-process">
+      <div class="container">
+
+        <div class="process-heading">
+          <p class="eyebrow">PARCOURS CLIENT</p>
+          <h2>Un accompagnement de bout en bout.</h2>
+          <p>
+            Le futur PDM CI pourra permettre de suivre la demande depuis le
+            premier contact jusqu'au suivi après-vente.
+          </p>
+        </div>
+
+        <div class="process-grid">
+
+          <article class="process-step">
+            <span class="process-number">01</span>
+            <div>
+              <h3>Écoute du besoin</h3>
+              <p>Comprendre le contexte, le besoin et les contraintes du client.</p>
+            </div>
+          </article>
+
+          <article class="process-step">
+            <span class="process-number">02</span>
+            <div>
+              <h3>Orientation</h3>
+              <p>Identifier la solution, le produit ou le showroom adapté.</p>
+            </div>
+          </article>
+
+          <article class="process-step">
+            <span class="process-number">03</span>
+            <div>
+              <h3>Déploiement</h3>
+              <p>Installation, mise en service et accompagnement des utilisateurs.</p>
+            </div>
+          </article>
+
+          <article class="process-step">
+            <span class="process-number">04</span>
+            <div>
+              <h3>Suivi</h3>
+              <p>Maintenance, assistance et suivi de la relation client.</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         CTA
+         ========================================================= -->
+    <section class="services-cta">
+      <div class="container services-cta-inner">
+        <div>
+          <p class="eyebrow">UN PROJET ?</p>
+          <h2>Parlons de votre besoin.</h2>
+          <p>
+            Décrivez-nous votre projet et notre équipe pourra vous orienter
+            vers la solution et le point de proximité adaptés.
+          </p>
+        </div>
+
+        <div class="services-cta-actions">
+          <a class="btn btn-orange btn-large" href="demande-devis.html">
+            Demander un devis <span>→</span>
+          </a>
+          <a class="btn btn-white btn-large" href="contact.html">
+            Nous contacter
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       FOOTER — MÊME STRUCTURE QUE LES AUTRES PAGES
+       ========================================================= -->
+  <footer class="footer">
+    <div class="container footer-grid">
+
+      <div class="footer-brand">
+        <a class="brand footer-logo" href="../index.html">
+          <img
+            class="brand-logo"
+            src="../assets/images/logo-medequip-ci.png"
+            alt="Logo MEDEQUIP Côte d'Ivoire"
+          >
+        </a>
+        <p>Plateforme Digitale MEDEQUIP Côte d'Ivoire.</p>
+      </div>
+
+      <div>
+        <h4>Navigation</h4>
+        <a href="catalogue.html">Produits</a>
+        <a href="services.html">Services</a>
+        <a href="showrooms.html">Showrooms</a>
+        <a href="actualites.html">Actualités</a>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <a href="contact.html">Nous contacter</a>
+        <a href="demande-devis.html">Demander un devis</a>
+        <a href="#">WhatsApp</a>
+      </div>
+
+      <div>
+        <h4>Réseaux</h4>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© 2026 MEDEQUIP Côte d'Ivoire — Prototype PDM CI</span>
+      <span>Phase 1 — Données de démonstration</span>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       FENÊTRE DE CONFIDENTIALITÉ
+       La structure est volontairement identique aux autres pages.
+       ========================================================= -->
+  <div id="privacyModal" class="privacy-modal" aria-hidden="true">
+    <div
+      class="privacy-modal-content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="privacy-title"
+    >
+      <h3 id="privacy-title">Politique de Confidentialité et Cookies</h3>
+
+      <div class="privacy-text">
+        <p>
+          Cette version de démonstration utilise le stockage local du
+          navigateur pour certaines fonctions.
+        </p>
+        <p>
+          Aucune donnée n'est envoyée à un serveur en Phase 1.
+          Votre choix est conservé localement.
+        </p>
+      </div>
+
+      <div class="privacy-actions">
+        <button id="declinePrivacy" class="btn-decline" type="button">
+          Refuser
+        </button>
+        <button id="acceptPrivacy" class="btn-accept" type="button">
+          Accepter et continuer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS GLOBAL -->
+  <script src="../assets/js/main.js"></script>
+
+  <!-- JS DE LA PAGE SERVICES -->
+  <script type="module" src="../assets/js/services.js"></script>
+
+</body>
+</html>

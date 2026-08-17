@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produits | PDM CI</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/catalogue.css">
+</head>
+<body>
+  <!-- ==================== BARRE SUPERIEURE ==================== -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>MEDEQUIP Côte d'Ivoire</span>
+      <div class="topbar-links">
+        <a href="showrooms.html">Nos showrooms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EN-TÊTE PRINCIPAL ==================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-wrap">
+      <!-- Logo MEDEQUIP-CI -->
+      <a class="brand" href="../index.html" aria-label="MEDEQUIP CI - Accueil">
+        <img class="brand-logo" src="../assets/images/logo-medequip-ci.png" alt="Logo MEDEQUIP Côte d'Ivoire">
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="../index.html">Accueil</a>
+        <a class="active" href="catalogue.html" aria-current="page">Produits</a>
+        <a href="services.html">Services</a>
+        <a href="showrooms.html">Showrooms</a>
+        <a href="actualites.html">Actualités</a>
+        <a href="contact.html">Contact</a>
+        <a class="btn btn-orange nav-cta" href="demande-devis.html">Demander un devis</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+<section class="catalogue-hero"><div class="container"><p class="eyebrow">CATALOGUE MEDEQUIP CI</p><h1>Nos <span>produits</span> et solutions</h1><p>Découvrez une sélection de solutions médicales, de laboratoire, de diagnostic et d'équipements.</p></div></section>
+<section class="catalogue-section"><div class="container">
+<div class="catalogue-toolbar"><div class="catalogue-search"><label for="product-search">Rechercher un produit</label><div class="search-box"><input id="product-search" type="search" placeholder="Nom, référence, catégorie..."><button type="button">Rechercher</button></div></div><div class="catalogue-result"><strong id="product-count">0</strong><span>produit(s)</span></div></div>
+<div id="category-list" class="category-list"></div><div id="products-grid" class="products-grid"></div>
+<div id="empty-state" class="empty-state" hidden><h2>Aucun produit trouvé</h2><p>Essayez une autre recherche ou catégorie.</p></div>
+</div></section>
+<section class="catalogue-cta"><div class="container"><div><p class="eyebrow">BESOIN D'UNE SOLUTION ?</p><h2>Vous ne trouvez pas exactement ce que vous recherchez ?</h2><p>Notre équipe peut vous orienter vers la solution adaptée.</p></div><a class="btn-primary" href="demande-devis.html">Demander un devis</a></div></section>
+</main>
+  <!-- ==================== PIED DE PAGE ==================== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand footer-logo" href="../index.html">
+          <img class="brand-logo" src="../assets/images/logo-medequip-ci.png" alt="Logo MEDEQUIP Côte d'Ivoire">
+        </a>
+        <p>Plateforme Digitale MEDEQUIP Côte d'Ivoire.</p>
+      </div>
+
+      <div>
+        <h4>Navigation</h4>
+        <a href="catalogue.html">Produits</a>
+        <a href="services.html">Services</a>
+        <a href="showrooms.html">Showrooms</a>
+        <a href="actualites.html">Actualités</a>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <a href="contact.html">Nous contacter</a>
+        <a href="demande-devis.html">Demander un devis</a>
+        <a href="#">WhatsApp</a>
+      </div>
+
+      <div>
+        <h4>Réseaux</h4>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 MEDEQUIP Côte d'Ivoire — Prototype PDM CI</span>
+      <span>Phase 1 — Données de démonstration</span>
+    </div>
+  </footer>
+  <!-- ==================== POP-UP CONFIDENTIALITÉ ==================== -->
+  <div id="privacyModal" class="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+    <div class="privacy-modal-content">
+      <h3 id="privacyTitle">Politique de confidentialité</h3>
+      <div class="privacy-text">
+        <p>Cette version de démonstration peut enregistrer certaines données dans le navigateur afin de simuler le fonctionnement de la plateforme.</p>
+        <p>Aucune donnée n'est envoyée à un serveur pendant la Phase 1. Vous pouvez accepter ou refuser cet enregistrement local.</p>
+      </div>
+      <div class="privacy-actions">
+        <button id="declinePrivacy" class="btn-decline" type="button">Refuser</button>
+        <button id="acceptPrivacy" class="btn-accept" type="button">Autoriser et continuer</button>
+      </div>
+    </div>
+  </div>
+  <script src="../assets/js/main.js"></script>
+  <script type="module" src="../assets/js/catalogue.js"></script>
+</body>
+</html>
