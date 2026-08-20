@@ -4,7 +4,7 @@
 // ============================================================
 
 const showrooms = [
-  {id:"show_abidjan_centre", ville:"Abidjan", zone:"Centre", nom:"Showroom Abidjan Centre", region:"District d'Abidjan", telephone:"À confirmer", whatsapp:"À confirmer", statut:"Démonstration"},
+  {id:"show_abidjan_Siège", ville:"Abidjan", zone:"Siège", nom:"Showroom Abidjan Siège", region:"District d'Abidjan", telephone:"À confirmer", whatsapp:"À confirmer", statut:"Démonstration"},
   {id:"show_abidjan_cocody", ville:"Abidjan", zone:"Cocody", nom:"Showroom Abidjan Cocody", region:"District d'Abidjan", telephone:"À confirmer", whatsapp:"À confirmer", statut:"Démonstration"},
   {id:"show_abidjan_yopougon", ville:"Abidjan", zone:"Yopougon", nom:"Showroom Abidjan Yopougon", region:"District d'Abidjan", telephone:"À confirmer", whatsapp:"À confirmer", statut:"Démonstration"},
   {id:"show_abidjan_port_bouet", ville:"Abidjan", zone:"Port-Bouët", nom:"Showroom Abidjan Port-Bouët", region:"District d'Abidjan", telephone:"À confirmer", whatsapp:"À confirmer", statut:"Démonstration"},
@@ -49,8 +49,15 @@ function renderShowrooms() {
         <div><span>Téléphone</span><strong>${item.telephone}</strong></div>
         <div><span>WhatsApp</span><strong>${item.whatsapp}</strong></div>
       </div>
-      <a class="showroom-action" href="contact.html?showroom=${encodeURIComponent(item.id)}">Contacter ce point <span>→</span></a>
-    </article>
+       <a class="showroom-action" href="contact.html?showroom=${encodeURIComponent(item.id)}">Contacter ce point <span>→</span></a>
+      
+    <a
+    class="showroom-action showroom-link"
+    href="showroom-detail.html?id=${item.id}"
+>
+    Voir le showroom →
+</a>
+      </article>
   `).join("");
 
   empty.hidden = filtered.length !== 0;

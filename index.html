@@ -6,6 +6,7 @@
   <meta name="description" content="PDM CI — Plateforme Digitale MEDEQUIP Côte d'Ivoire. Découvrez nos solutions de santé, nos produits et notre réseau de showrooms.">
   <title>PDM CI | MEDEQUIP Côte d'Ivoire</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/carrosel.css">
 </head>
 <body>
   <div class="topbar">
@@ -70,17 +71,52 @@
         <div class="hero-visual" aria-label="Illustration de solutions médicales">
           <div class="visual-glow"></div>
           <div class="medical-card card-main">
-            <div class="card-top">
-              <span class="mini-label">SOLUTION MÉDICALE</span>
-              <span class="status-dot"></span>
-            </div>
-            <div class="device-illustration">
-              <div class="monitor-screen">
-                <div class="ecg"></div>
-                <span>98</span>
-                <small>SpO₂</small>
-              </div>
-            </div>
+            
+                  <!-- ==========================================
+     CARROUSEL IMAGES - CARTE ACCUEIL
+     ========================================== -->
+<div class="hero-card-carousel">
+
+    <!-- Images du carrousel -->
+    <div class="hero-slide active">
+        <img
+            src="assets/images/Analyseur.jpeg"
+            alt="Automate de biochimie"
+        >
+    </div>
+
+    <div class="hero-slide">
+        <img
+            src="assets/images/Concentrateurs.jpeg"
+            alt="Concentrateur d'oxygene"
+        >
+    </div>
+
+    <div class="hero-slide">
+        <img
+            src="assets/images/moniteur.jpeg"
+            alt="Moniteur de surveillance"
+        >
+    </div>
+
+    <div class="hero-slide">
+        <img
+            src="assets/images/autoclave.webp"
+            alt="Autoclave médical"
+        >
+    </div>
+
+    <!-- Indicateurs -->
+    <div class="hero-carousel-dots">
+        <button class="hero-dot active" data-slide="0" aria-label="Image 1"></button>
+        <button class="hero-dot" data-slide="1" aria-label="Image 2"></button>
+        <button class="hero-dot" data-slide="2" aria-label="Image 3"></button>
+        <button class="hero-dot" data-slide="3" aria-label="Image 4"></button>
+    </div>
+
+</div>
+              
+             
             <div class="card-footer">
               <strong>Technologie &amp; performance</strong>
               <span>MEDEQUIP-CI</span>
@@ -341,6 +377,7 @@
   </footer>
 
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/home-carousel.js"></script>
   <!-- Pop-up Règles de Confidentialité -->
 <div id="privacyModal" class="privacy-modal">
   <div class="privacy-modal-content">
