@@ -34,7 +34,39 @@ const SHOWROOMS = [
         equipements: [
             "prod_biochimie_01",
             "prod_hematologie_01",
-            "prod_centrifugeuse_01"
+            "prod_centrifugeuse_01",
+            "prod_consomable_1"
+        ]
+    },
+
+    {
+        id: "show_abidjan_koumassi",
+        nom: "Showroom Abidjan koumassi",
+        ville: "Abidjan",
+        region: "District d'Abidjan",
+
+        adresse: "Abidjan, Côte d'Ivoire",
+
+        telephone: "+225 07 00 00 00 01",
+        whatsapp: "+225 07 00 00 00 01",
+
+        email: "koumassi@medequip-ci.com",
+
+        image: "../assets/images/showrooms/koumassi.jpeg",
+
+        description:
+            "Notre showroom d'Abidjan présente une sélection d'équipements médicaux, de laboratoire et de solutions adaptées aux professionnels de santé.",
+
+        horaires: "Lundi - Vendredi : 08h00 - 17h00",
+
+        latitude: 5.336433642,
+        longitude: -4.026734334,
+
+        equipements: [
+            "prod_biochimie_01",
+            "prod_hematologie_01",
+            "prod_centrifugeuse_01",
+            "prod_consomable_1"
         ]
     },
 
@@ -280,7 +312,7 @@ const SHOWROOMS = [
 
         email: "abengourou@medequip-ci.com",
 
-        image: "../assets/images/showrooms/abengourou.jpg",
+        image: "../assets/images/showrooms/abengourou.jpeg",
 
         description:
             "Le showroom de Abengourou accompagne les établissements sanitaires de la région avec des équipements et services adaptés.",
@@ -304,6 +336,18 @@ const SHOWROOMS = [
 // ==========================================================
 
 const PRODUITS = [
+    {
+        id: "prod_consomable_1",
+
+        nom: "Consomable Medical",
+
+        categorie: "consomable",
+
+        image: "../assets/images/solution-consommables.jpeg",
+
+        description: "produit consomble médical",
+
+    },
 
     {
         id: "prod_biochimie_01",
@@ -312,7 +356,7 @@ const PRODUITS = [
 
         categorie: "Laboratoire",
 
-        image: "../assets/images/produits/biochimie.jpg",
+        image: "../assets/images/produit-biochimie.jpeg",
 
         description:
             "Automate destiné aux analyses biochimiques dans les laboratoires.",
@@ -332,7 +376,7 @@ const PRODUITS = [
 
         categorie: "Laboratoire",
 
-        image: "../assets/images/produits/hematologie.jpg",
+        image: "../assets/images/Analyseur.jpeg",
 
         description:
             "Solution d'analyse hématologique destinée aux laboratoires médicaux.",
@@ -372,7 +416,7 @@ const PRODUITS = [
 
         categorie: "Stérilisation",
 
-        image: "../assets/images/produits/autoclave.jpg",
+        image: "../assets/images/autoclave.jpeg",
 
         description:
             "Équipement destiné à la stérilisation des instruments médicaux.",
