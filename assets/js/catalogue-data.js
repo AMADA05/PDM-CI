@@ -16,6 +16,7 @@ const catalogueProduits = [
   {id:"prod_autoclave_01",nom:"Autoclave médical",reference:"STE-300",categorie:"cat_ster",categorieNom:"Stérilisation",image:"../assets/images/autoclave.webp",description:"Équipement fictif de stérilisation.",apm_ref:null},
   {id:"prod_oxygene_01",nom:"Concentrateur d'oxygène",reference:"OXY-10",categorie:"cat_diag",categorieNom:"Diagnostic",image:"../assets/images/Concentrateur.jpeg",description:"Concentrateur d'oxygène fictif.",apm_ref:null},
   {id:"prod_lit_01",nom:"Lit médicalisé",reference:"MOB-210",categorie:"cat_mob",categorieNom:"Mobilier médical",image:"../assets/images/solution-medicale.jpeg",description:"Lit médicalisé fictif.",apm_ref:null},
-  {id:"prod_aspiration_01",nom:"Aspirateur médical",reference:"ASP-150",categorie:"cat_diag",categorieNom:"Diagnostic",image:"../assets/images/aspirateur.jpeg",description:"Aspirateur médical fictif.",apm_ref:null}
+  {id:"prod_aspiration_01",nom:"Aspirateur médical",reference:"ASP-150",categorie:"cat_diag",categorieNom:"Diagnostic",image:"../assets/images/aspirateur.jpeg",description:"Aspirateur médical fictif.",apm_ref:null},
+  {id:"prod_on_call_01",nom:"On Call",reference:"ONC-01",categorie:"cat_diag",categorieNom:"Laboratoire",image:"../assets/images/produit/on_calls.JPG",description:"Test rapide.",apm_ref:null}
 ];
 export {catalogueCategories,catalogueProduits};
