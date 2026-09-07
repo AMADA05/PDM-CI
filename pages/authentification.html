@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <!-- =====================================================
+         PDM CI - PAGE D'AUTHENTIFICATION
+    ====================================================== -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Authentification | MEDEQUIP CI</title>
+
+    <!-- CSS GLOBAL DU SITE -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- CSS DE CETTE PAGE -->
+    <link rel="stylesheet" href="../assets/css/authentification.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         EN-TÊTE PDM CI
+         Garder la même structure que les autres pages
+    ====================================================== -->
+
+ <header class="site-header" id="siteHeader">
+    <div class="container nav-wrap">
+      <!-- ==================== LOGO MEDEQUIP-CI ==================== -->
+      <!-- Remplacer le fichier assets/images/logo-medequip-ci.png si nécessaire. -->
+      <a class="brand" href="index.html" aria-label="MEDEQUIP CI - Accueil">
+        <img class="brand-logo" src="../assets/images/logo-medequip-ci.png" alt="Logo MEDEQUIP Côte d'Ivoire">
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="../index.html">Accueil</a>
+        <a href="../pages/catalogue.html">Produits</a>
+        <a href="../pages/services.html">Services</a>
+        <a href="../pages/showrooms.html">Showrooms</a>
+        <a href="../pages/actualites.html">Actualités</a>
+        <a href="../pages/contact.html">Contact</a>
+        <a class="btn btn-orange nav-cta" href="../pages/demande-devis.html">Demander un devis</a>
+      </nav>
+    </div>
+  </header>
+
+
+    <!-- =====================================================
+         CONTENU PRINCIPAL
+    ====================================================== -->
+
+    <main class="auth-page">
+
+        <section class="auth-section">
+
+            <!-- =================================================
+                 PRÉSENTATION
+            ================================================== -->
+
+            <div class="auth-introduction">
+
+                <span class="auth-badge">
+                    PDM CI
+                </span>
+
+                <h1 id="auth-title">
+                    Bienvenue sur votre espace
+                </h1>
+
+                <p id="auth-description">
+                    Connectez-vous à votre compte MEDEQUIP CI
+                    pour accéder à vos services et suivre vos
+                    demandes.
+                </p>
+
+                <div class="auth-features">
+
+                    <div class="auth-feature">
+                        <span>✓</span>
+                        <p>Suivre vos demandes</p>
+                    </div>
+
+                    <div class="auth-feature">
+                        <span>✓</span>
+                        <p>Demander des devis</p>
+                    </div>
+
+                    <div class="auth-feature">
+                        <span>✓</span>
+                        <p>Accéder aux services MEDEQUIP</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CARTE AUTHENTIFICATION
+            ================================================== -->
+
+            <div class="auth-card">
+
+                <!-- ONGLETS -->
+                <div class="auth-tabs">
+
+                    <button
+                        type="button"
+                        id="login-tab"
+                        class="auth-tab active"
+                    >
+                        Se connecter
+                    </button>
+
+                    <button
+                        type="button"
+                        id="register-tab"
+                        class="auth-tab"
+                    >
+                        Créer un compte
+                    </button>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+                <div
+                    id="auth-message"
+                    class="auth-message"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- =================================================
+                     FORMULAIRE CONNEXION
+                ================================================== -->
+
+                <form
+                    id="login-form"
+                    class="auth-form active"
+                    novalidate
+                >
+
+                    <div class="form-header">
+
+                        <h2>
+                            Se connecter
+                        </h2>
+
+                        <p>
+                            Accédez à votre espace PDM CI.
+                        </p>
+
+                    </div>
+
+
+                    <!-- EMAIL / TÉLÉPHONE -->
+
+                    <div class="form-group">
+
+                        <label for="login-identifier">
+                            Email ou téléphone
+                        </label>
+
+                        <input
+                            type="text"
+                            id="login-identifier"
+                            name="identifier"
+                            placeholder="Email ou numéro de téléphone"
+                            autocomplete="username"
+                            required
+                        >
+
+                        <small
+                            id="login-identifier-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- MOT DE PASSE -->
+
+                    <div class="form-group">
+
+                        <div class="label-line">
+
+                            <label for="login-password">
+                                Mot de passe
+                            </label>
+
+                            <a href="#" id="forgot-password">
+                                Mot de passe oublié ?
+                            </a>
+
+                        </div>
+
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="login-password"
+                                name="password"
+                                placeholder="Votre mot de passe"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                data-target="login-password"
+                            >
+                                Afficher
+                            </button>
+
+                        </div>
+
+                        <small
+                            id="login-password-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- SE SOUVENIR -->
+
+                    <label class="remember-option">
+
+                        <input
+                            type="checkbox"
+                            id="remember-me"
+                        >
+
+                        <span>
+                            Se souvenir de moi
+                        </span>
+
+                    </label>
+
+
+                    <!-- BOUTON -->
+
+                    <button
+                        type="submit"
+                        class="auth-submit"
+                        id="login-button"
+                    >
+                        Se connecter
+                    </button>
+
+
+                    <!-- PASSAGE INSCRIPTION -->
+
+                    <div class="switch-auth">
+
+                        <p>
+                            Vous n'avez pas encore de compte ?
+                            <button
+                                type="button"
+                                class="switch-button"
+                                id="go-register"
+                            >
+                                Créer un compte
+                            </button>
+                        </p>
+
+                    </div>
+
+                </form>
+
+
+                <!-- =================================================
+                     FORMULAIRE INSCRIPTION
+                ================================================== -->
+
+                <form
+                    id="register-form"
+                    class="auth-form"
+                    novalidate
+                >
+
+                    <div class="form-header">
+
+                        <h2>
+                            Créer un compte
+                        </h2>
+
+                        <p>
+                            Créez votre compte client MEDEQUIP CI.
+                        </p>
+
+                    </div>
+
+
+                    <!-- NOM / PRÉNOM -->
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="register-nom">
+                                Nom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="register-nom"
+                                placeholder="Votre nom"
+                                required
+                            >
+
+                            <small
+                                id="register-nom-error"
+                                class="field-error"
+                            ></small>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="register-prenom">
+                                Prénom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="register-prenom"
+                                placeholder="Votre prénom"
+                                required
+                            >
+
+                            <small
+                                id="register-prenom-error"
+                                class="field-error"
+                            ></small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TÉLÉPHONE -->
+
+                    <div class="form-group">
+
+                        <label for="register-telephone">
+                            Téléphone
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="register-telephone"
+                            placeholder="Ex : 0700000000"
+                            required
+                        >
+
+                        <small
+                            id="register-telephone-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="register-email">
+                            Adresse e-mail
+                        </label>
+
+                        <input
+                            type="email"
+                            id="register-email"
+                            placeholder="exemple@email.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                        <small
+                            id="register-email-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- VILLE -->
+
+                    <div class="form-group">
+
+                        <label for="register-ville">
+                            Ville
+                        </label>
+
+                        <input
+                            type="text"
+                            id="register-ville"
+                            placeholder="Votre ville"
+                            required
+                        >
+
+                        <small
+                            id="register-ville-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- MOT DE PASSE -->
+
+                    <div class="form-group">
+
+                        <label for="register-password">
+                            Mot de passe
+                        </label>
+
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="register-password"
+                                placeholder="Minimum 8 caractères"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                data-target="register-password"
+                            >
+                                Afficher
+                            </button>
+
+                        </div>
+
+                        <div class="password-strength">
+
+                            <div
+                                id="strength-bar"
+                                class="strength-bar"
+                            ></div>
+
+                        </div>
+
+                        <small id="strength-text">
+                            Minimum 8 caractères
+                        </small>
+
+                        <small
+                            id="register-password-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- CONFIRMATION -->
+
+                    <div class="form-group">
+
+                        <label for="register-confirm">
+                            Confirmer le mot de passe
+                        </label>
+
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="register-confirm"
+                                placeholder="Confirmez votre mot de passe"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                data-target="register-confirm"
+                            >
+                                Afficher
+                            </button>
+
+                        </div>
+
+                        <small
+                            id="register-confirm-error"
+                            class="field-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- CONDITIONS -->
+
+                    <label class="terms-option">
+
+                        <input
+                            type="checkbox"
+                            id="register-terms"
+                            required
+                        >
+
+                        <span>
+                            J'accepte les conditions d'utilisation
+                            et la politique de confidentialité.
+                        </span>
+
+                    </label>
+
+                    <small
+                        id="register-terms-error"
+                        class="field-error"
+                    ></small>
+
+
+                    <!-- RÔLE FIXE -->
+
+                    <input
+                        type="hidden"
+                        id="register-role"
+                        value="client"
+                    >
+
+
+                    <!-- BOUTON -->
+
+                    <button
+                        type="submit"
+                        class="auth-submit"
+                        id="register-button"
+                    >
+                        Créer mon compte
+                    </button>
+
+
+                    <!-- PASSAGE CONNEXION -->
+
+                    <div class="switch-auth">
+
+                        <p>
+                            Vous avez déjà un compte ?
+
+                            <button
+                                type="button"
+                                class="switch-button"
+                                id="go-login"
+                            >
+                                Se connecter
+                            </button>
+
+                        </p>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER PDM CI
+    ====================================================== -->
+
+    <!-- ==================== PIED DE PAGE ==================== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <!-- ==================== LOGO FOOTER ==================== -->
+        <a class="brand footer-logo" href="index.html">
+          <img class="brand-logo" src="../assets/images/logo-medequip-ci.png" alt="Logo MEDEQUIP Côte d'Ivoire">
+        </a>
+        <p>Plateforme Digitale MEDEQUIP Côte d'Ivoire.</p>
+      </div>
+      <div><h4>Navigation</h4><a href="pages/catalogue.html">Produits</a><a href="pages/services.html">Services</a><a href="pages/showrooms.html">Showrooms</a><a href="pages/actualites.html">Actualités</a></div>
+      <div><h4>Contact</h4><a href="pages/contact.html">Nous contacter</a><a href="pages/demande-devis.html">Demander un devis</a><a href="#">WhatsApp</a></div>
+      <div><h4>Réseaux</h4><a href="#">Facebook</a><a href="#">Instagram</a><a href="#">TikTok</a></div>
+    </div>
+    <div class="container footer-bottom"><span>© 2026 MEDEQUIP Côte d'Ivoire — Prototype PDM CI</span><span>Phase 1 — Données de démonstration</span></div>
+  </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="../assets/js/authentification.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Administration | PDM CI</title>
+
+  <link rel="stylesheet" href="../assets/css/administration.css">
+</head>
+
+<body>
+
+  <!-- =====================================================
+       STRUCTURE PRINCIPALE
+  ====================================================== -->
+
+  <div class="admin-layout">
+
+    <!-- ===================================================
+         SIDEBAR
+    ==================================================== -->
+
+    <aside class="admin-sidebar" id="adminSidebar">
+
+      <div class="admin-brand">
+
+        <img
+          src="../assets/images/logo-medequip-ci.png"
+          alt="MEDEQUIP Côte d'Ivoire"
+        >
+
+        <span>Administration</span>
+
+      </div>
+
+
+      <!-- NAVIGATION -->
+
+      <nav class="admin-nav">
+
+        <button class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">▦</span>
+          <span>Tableau de bord</span>
+        </button>
+
+        <button class="nav-item" data-section="produits">
+          <span class="nav-icon">▣</span>
+          <span>Produits</span>
+        </button>
+
+        <button class="nav-item" data-section="showrooms">
+          <span class="nav-icon">⌂</span>
+          <span>Showrooms</span>
+        </button>
+
+        <button class="nav-item" data-section="services">
+          <span class="nav-icon">⚙</span>
+          <span>Services</span>
+        </button>
+
+        <button class="nav-item" data-section="actualites">
+          <span class="nav-icon">▤</span>
+          <span>Actualités</span>
+        </button>
+
+        <button class="nav-item" data-section="utilisateurs">
+          <span class="nav-icon">♙</span>
+          <span>Utilisateurs</span>
+        </button>
+
+        <button class="nav-item" data-section="devis">
+          <span class="nav-icon">▧</span>
+          <span>Demandes de devis</span>
+        </button>
+
+      </nav>
+
+
+      <!-- BAS SIDEBAR -->
+
+      <div class="sidebar-bottom">
+
+        <a href="../index.html" class="back-site">
+          ← Voir le site
+        </a>
+
+        <button id="logoutButton" class="logout-button">
+          ↪ Déconnexion
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- ===================================================
+         CONTENU
+    ==================================================== -->
+
+    <main class="admin-main">
+
+      <!-- HEADER ADMIN -->
+
+      <header class="admin-header">
+
+        <button
+          class="sidebar-toggle"
+          id="sidebarToggle"
+          aria-label="Ouvrir le menu"
+        >
+          ☰
+        </button>
+
+        <div class="admin-header-title">
+
+          <h1 id="pageTitle">
+            Tableau de bord
+          </h1>
+
+          <p id="pageSubtitle">
+            Vue générale de l'activité PDM CI
+          </p>
+
+        </div>
+
+
+        <div class="admin-user">
+
+          <div class="admin-avatar">
+            A
+          </div>
+
+          <div>
+
+            <strong>Administrateur</strong>
+
+            <span>Administrateur</span>
+
+          </div>
+
+        </div>
+
+      </header>
+
+
+      <!-- =================================================
+           CONTENU DES SECTIONS
+      ================================================== -->
+
+      <div class="admin-content">
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
+
+        <section
+          class="admin-section active"
+          id="section-dashboard"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>
+                Tableau de bord
+              </h2>
+
+              <p>
+                Vue générale de la plateforme PDM CI.
+              </p>
+
+            </div>
+
+            <span class="demo-badge">
+              MODE DÉMO
+            </span>
+
+          </div>
+
+
+          <!-- STATISTIQUES -->
+
+          <div class="stats-grid">
+
+            <article class="stat-card">
+
+              <div class="stat-icon orange">
+                ▣
+              </div>
+
+              <div>
+                <span>Produits</span>
+                <strong>126</strong>
+              </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <div class="stat-icon green">
+                ⌂
+              </div>
+
+              <div>
+                <span>Showrooms</span>
+                <strong>11</strong>
+              </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <div class="stat-icon blue">
+                ♙
+              </div>
+
+              <div>
+                <span>Utilisateurs</span>
+                <strong>248</strong>
+              </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <div class="stat-icon orange">
+                ▧
+              </div>
+
+              <div>
+                <span>Demandes de devis</span>
+                <strong>37</strong>
+              </div>
+
+            </article>
+
+          </div>
+
+
+          <!-- DEUX COLONNES -->
+
+          <div class="dashboard-grid">
+
+
+            <!-- ACTIVITÉ -->
+
+            <article class="admin-card">
+
+              <div class="card-header">
+
+                <div>
+
+                  <h3>
+                    Activité récente
+                  </h3>
+
+                  <p>
+                    Dernières opérations enregistrées.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="activity-list">
+
+                <div class="activity-item">
+
+                  <span class="activity-dot green"></span>
+
+                  <div>
+                    <strong>Nouveau prospect</strong>
+                    <small>Demande de devis — Abidjan</small>
+                  </div>
+
+                  <time>10 min</time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                  <span class="activity-dot orange"></span>
+
+                  <div>
+                    <strong>Produit ajouté</strong>
+                    <small>Automate de biochimie</small>
+                  </div>
+
+                  <time>1 h</time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                  <span class="activity-dot blue"></span>
+
+                  <div>
+                    <strong>Nouvelle inscription</strong>
+                    <small>Compte client créé</small>
+                  </div>
+
+                  <time>2 h</time>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                  <span class="activity-dot green"></span>
+
+                  <div>
+                    <strong>Showroom mis à jour</strong>
+                    <small>Showroom Abidjan</small>
+                  </div>
+
+                  <time>3 h</time>
+
+                </div>
+
+              </div>
+
+            </article>
+
+
+            <!-- APERÇU -->
+
+            <article class="admin-card">
+
+              <div class="card-header">
+
+                <div>
+
+                  <h3>
+                    État de la plateforme
+                  </h3>
+
+                  <p>
+                    Indicateurs principaux.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="progress-list">
+
+                <div class="progress-item">
+
+                  <div>
+                    <span>Produits publiés</span>
+                    <strong>92%</strong>
+                  </div>
+
+                  <div class="progress">
+                    <span style="width: 92%;"></span>
+                  </div>
+
+                </div>
+
+
+                <div class="progress-item">
+
+                  <div>
+                    <span>Showrooms actifs</span>
+                    <strong>100%</strong>
+                  </div>
+
+                  <div class="progress">
+                    <span style="width: 100%;"></span>
+                  </div>
+
+                </div>
+
+
+                <div class="progress-item">
+
+                  <div>
+                    <span>Services publiés</span>
+                    <strong>86%</strong>
+                  </div>
+
+                  <div class="progress">
+                    <span style="width: 86%;"></span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PRODUITS
+        ================================================== -->
+
+        <section
+          class="admin-section"
+          id="section-produits"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>Produits</h2>
+
+              <p>
+                Gestion du catalogue des équipements.
+              </p>
+
+            </div>
+
+            <button class="primary-button">
+              + Ajouter un produit
+            </button>
+
+          </div>
+
+
+          <div class="admin-card">
+
+            <div class="table-tools">
+
+              <input
+                type="search"
+                class="admin-search"
+                placeholder="Rechercher un produit..."
+                data-table-search="productsTable"
+              >
+
+              <select class="filter-select">
+                <option>Toutes les catégories</option>
+                <option>Laboratoire</option>
+                <option>Imagerie</option>
+                <option>Diagnostic</option>
+                <option>Mobilier médical</option>
+              </select>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+              <table id="productsTable">
+
+                <thead>
+
+                  <tr>
+                    <th>Produit</th>
+                    <th>Catégorie</th>
+                    <th>Statut</th>
+                    <th>Showroom</th>
+                    <th>Actions</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <td>Automate de biochimie</td>
+                    <td>Laboratoire</td>
+                    <td>
+                      <span class="status active">
+                        Publié
+                      </span>
+                    </td>
+                    <td>Abidjan</td>
+                    <td>
+                      <button class="table-action">Modifier</button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>Analyseur d'hématologie</td>
+                    <td>Laboratoire</td>
+                    <td>
+                      <span class="status active">
+                        Publié
+                      </span>
+                    </td>
+                    <td>Abidjan</td>
+                    <td>
+                      <button class="table-action">Modifier</button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>Moniteur multiparamétrique</td>
+                    <td>Diagnostic</td>
+                    <td>
+                      <span class="status draft">
+                        Brouillon
+                      </span>
+                    </td>
+                    <td>Man</td>
+                    <td>
+                      <button class="table-action">Modifier</button>
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SHOWROOMS
+        ================================================== -->
+
+        <section
+          class="admin-section"
+          id="section-showrooms"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>Showrooms</h2>
+
+              <p>
+                Gestion des points de vente MEDEQUIP CI.
+              </p>
+
+            </div>
+
+            <button class="primary-button">
+              + Ajouter un showroom
+            </button>
+
+          </div>
+
+
+          <div class="showroom-admin-grid">
+
+            <article class="showroom-admin-card">
+
+              <div class="showroom-placeholder">
+                AB
+              </div>
+
+              <div>
+
+                <h3>
+                  Showroom Abidjan
+                </h3>
+
+                <p>
+                  Abidjan — Côte d'Ivoire
+                </p>
+
+                <span class="status active">
+                  Actif
+                </span>
+
+              </div>
+
+              <button class="table-action">
+                Gérer
+              </button>
+
+            </article>
+
+
+            <article class="showroom-admin-card">
+
+              <div class="showroom-placeholder">
+                MA
+              </div>
+
+              <div>
+
+                <h3>
+                  Showroom Man
+                </h3>
+
+                <p>
+                  Man — Côte d'Ivoire
+                </p>
+
+                <span class="status active">
+                  Actif
+                </span>
+
+              </div>
+
+              <button class="table-action">
+                Gérer
+              </button>
+
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SERVICES
+        ================================================== -->
+
+        <section
+          class="admin-section"
+          id="section-services"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>Services</h2>
+
+              <p>
+                Gestion des services proposés par MEDEQUIP CI.
+              </p>
+
+            </div>
+
+            <button class="primary-button">
+              + Ajouter un service
+            </button>
+
+          </div>
+
+
+          <div class="content-cards">
+
+            <article class="content-card">
+
+              <h3>
+                Maintenance biomédicale
+              </h3>
+
+              <p>
+                Maintenance préventive et curative
+                des équipements.
+              </p>
+
+              <span class="status active">
+                Publié
+              </span>
+
+            </article>
+
+
+            <article class="content-card">
+
+              <h3>
+                Installation
+              </h3>
+
+              <p>
+                Installation et mise en service
+                des équipements.
+              </p>
+
+              <span class="status active">
+                Publié
+              </span>
+
+            </article>
+
+
+            <article class="content-card">
+
+              <h3>
+                Formation
+              </h3>
+
+              <p>
+                Formation des utilisateurs aux équipements.
+              </p>
+
+              <span class="status active">
+                Publié
+              </span>
+
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ACTUALITÉS
+        ================================================== -->
+
+        <section
+          class="admin-section"
+          id="section-actualites"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>Actualités</h2>
+
+              <p>
+                Gestion des informations publiées sur PDM CI.
+              </p>
+
+            </div>
+
+            <button class="primary-button">
+              + Nouvelle actualité
+            </button>
+
+          </div>
+
+
+          <div class="content-cards">
+
+            <article class="content-card">
+
+              <span class="news-date">
+                20 août 2026
+              </span>
+
+              <h3>
+                Nouvelle gamme d'équipements
+              </h3>
+
+              <p>
+                Découvrez nos nouvelles solutions
+                pour les laboratoires.
+              </p>
+
+              <span class="status active">
+                Publiée
+              </span>
+
+            </article>
+
+
+            <article class="content-card">
+
+              <span class="news-date">
+                15 août 2026
+              </span>
+
+              <h3>
+                Journée de démonstration
+              </h3>
+
+              <p>
+                Présentation des nouveaux équipements
+                biomédicaux.
+              </p>
+
+              <span class="status draft">
+                Brouillon
+              </span>
+
+            </article>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             UTILISATEURS
+        ================================================== -->
+
+        <section
+          class="admin-section"
+          id="section-utilisateurs"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>Utilisateurs</h2>
+
+              <p>
+                Gestion des comptes et des rôles.
+              </p>
+
+            </div>
+
+            <button class="primary-button">
+              + Ajouter un utilisateur
+            </button>
+
+          </div>
+
+
+          <div class="admin-card">
+
+            <div class="table-wrapper">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+
+                    <td>
+                      Administrateur
+                    </td>
+
+                    <td>
+                      admin@medequip.ci
+                    </td>
+
+                    <td>
+                      <span class="role admin">
+                        Admin
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="status active">
+                        Actif
+                      </span>
+                    </td>
+
+                    <td>
+                      <button class="table-action">
+                        Gérer
+                      </button>
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      Client démo
+                    </td>
+
+                    <td>
+                      client@example.com
+                    </td>
+
+                    <td>
+                      <span class="role client">
+                        Client
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="status active">
+                        Actif
+                      </span>
+                    </td>
+
+                    <td>
+                      <button class="table-action">
+                        Gérer
+                      </button>
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             DEMANDES DE DEVIS
+        ================================================== -->
+
+        <section
+          class="admin-section"
+          id="section-devis"
+        >
+
+          <div class="section-heading">
+
+            <div>
+
+              <h2>Demandes de devis</h2>
+
+              <p>
+                Suivi des demandes commerciales reçues.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="stats-grid compact">
+
+            <article class="stat-card">
+
+              <div class="stat-icon orange">
+                !
+              </div>
+
+              <div>
+                <span>Nouvelles</span>
+                <strong>12</strong>
+              </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <div class="stat-icon blue">
+                ↻
+              </div>
+
+              <div>
+                <span>En traitement</span>
+                <strong>15</strong>
+              </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <div class="stat-icon green">
+                ✓
+              </div>
+
+              <div>
+                <span>Converties</span>
+                <strong>10</strong>
+              </div>
+
+            </article>
+
+          </div>
+
+
+          <div class="admin-card">
+
+            <div class="table-wrapper">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Client</th>
+                    <th>Produit</th>
+                    <th>Origine</th>
+                    <th>Showroom</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr>
+
+                    <td>
+                      Client entreprise
+                    </td>
+
+                    <td>
+                      Automate de biochimie
+                    </td>
+
+                    <td>
+                      Site web
+                    </td>
+
+                    <td>
+                      Abidjan
+                    </td>
+
+                    <td>
+                      <span class="status pending">
+                        Nouveau
+                      </span>
+                    </td>
+
+                    <td>
+                      <button class="table-action">
+                        Ouvrir
+                      </button>
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td>
+                      Centre médical
+                    </td>
+
+                    <td>
+                      Analyseur d'hématologie
+                    </td>
+
+                    <td>
+                      WhatsApp
+                    </td>
+
+                    <td>
+                      Man
+                    </td>
+
+                    <td>
+                      <span class="status active">
+                        En cours
+                      </span>
+                    </td>
+
+                    <td>
+                      <button class="table-action">
+                        Ouvrir
+                      </button>
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- MODALE ADMINISTRATION -->
+  <div id="adminModal" class="admin-modal" aria-hidden="true"></div>
+
+  <!-- JAVASCRIPT -->
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/administration.js"></script>
+
+</body>
+
+</html>
