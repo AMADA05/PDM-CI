@@ -2,11 +2,15 @@
 // PDM-CI — AUTHENTIFICATION CONNECTÉE À POSTGRESQL
 // ==========================================================
 // Détection automatique : Local vs Production
+// ==========================================================
+// 1. CONFIGURATION DE L'API
+// ==========================================================
 const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:5000"
   : "https://pdm-ci.onrender.com";
 
 const API_URL = `${API_BASE_URL}/api/auth`;
+const API_AUTH_URL = API_URL; // <--- Ajoute cette ligne pour que API_AUTH_URL soit bien définie
 
 const loginTab = document.getElementById("login-tab");
 const registerTab = document.getElementById("register-tab");
