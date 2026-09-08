@@ -207,11 +207,19 @@ registerForm?.addEventListener("submit", async function (event) {
     registerForm.reset();
     showMessage("Compte créé avec succès ! Connectez-vous.", "success");
 
-    setTimeout(() => {
-      showLogin();
-      const loginIdentifier = document.getElementById("login-identifier");
-      if (loginIdentifier) loginIdentifier.value = email;
-    }, 1000);
+    const IS_GITHUB_PAGES = window.location.pathname.includes('/PDM-CI/');
+    const PATH_PREFIX = IS_GITHUB_PAGES ? '/PDM-CI' : '';
+
+setTimeout(() => {
+  const roles = user?.roles || (user?.role ? [user.role] : []);
+  const isAdmin = roles.some(r => String(r).toLowerCase().includes("admin")) || user?.email === "admin@pdmci.com";
+
+  if (isAdmin) {
+    window.location.href = `${PATH_PREFIX}/pages/administration.html`;
+  } else {
+    window.location.href = `${PATH_PREFIX}/index.html`;
+  }
+}, 600);
 
   } catch (error) {
     console.error("Erreur lors de l'inscription :", error);

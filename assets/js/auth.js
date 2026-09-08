@@ -1,14 +1,14 @@
 // ==========================================================
 // PDM-CI — GESTION GLOBALE DE L'AUTHENTIFICATION & DU TOKEN JWT
 // ==========================================================
-// Détecte automatiquement si on est sur GitHub Pages ou en local
-const BASE_PATH = window.location.pathname.includes('/PDM-CI/') ? '/PDM-CI' : '';
 
-// Exemple de redirection pour déconnexion ou expulsion :
+// Détection dynamique du chemin de base (Support GitHub Pages & Local)
+const IS_GITHUB_PAGES = window.location.pathname.includes('/PDM-CI/');
+const PATH_PREFIX = IS_GITHUB_PAGES ? '/PDM-CI' : '';
+
+// Fonction globale de déconnexion
 function deconnexion() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = `${BASE_PATH}/index.html`;
+  Auth.logout();
 }
 
 const Auth = {
@@ -50,7 +50,6 @@ const Auth = {
     const user = this.getUser();
     if (!user) return [];
 
-    // Support des rôles sous forme d'un tableau d'objets ou d'un tableau de chaînes
     const rolesArray = user.roles || user.roles_noms || (user.role ? [user.role] : []);
     
     if (!Array.isArray(rolesArray)) {
@@ -70,10 +69,6 @@ const Auth = {
     return this.getRoles().includes(target);
   },
 
-  // ======================================================
-  // PROFIL UTILISATEUR
-  // ======================================================
-
   getDisplayName() {
     const user = this.getUser();
     if (!user) return "";
@@ -86,23 +81,20 @@ const Auth = {
   },
 
   // ======================================================
-  // ROUTAGE ET ESPACES
+  // ROUTAGE DYNAMIQUE
   // ======================================================
 
   getDashboardUrl() {
     const roles = this.getRoles();
 
     if (roles.includes("administrateur") || roles.includes("admin")) {
-      return "/pages/administration.html";
+      return `${PATH_PREFIX}/pages/administration.html`;
     }
-    if (roles.includes("technicien_medequip") || roles.includes("gestionnaire_showroom")) {
-      return "/dashboard/index.html";
-    }
-    return "/index.html";
+    return `${PATH_PREFIX}/index.html`;
   },
 
   // ======================================================
-  // NETTOYAGE ET DÉCONNEXION
+  // DÉCONNEXION PROPRE
   // ======================================================
 
   clearSession() {
@@ -113,27 +105,16 @@ const Auth = {
 
   logout() {
     this.clearSession();
-    window.location.href = "/pages/authentification.html";
+    window.location.href = `${PATH_PREFIX}/index.html`;
   },
 
   // ======================================================
-  // VERROUILLAGE DES PAGES ET GUARDS
+  // PROTECTION DES PAGES (GUARDS)
   // ======================================================
 
   requireLogin() {
     if (!this.isLoggedIn()) {
-      window.location.href = "/pages/authentification.html";
-      return false;
-    }
-    return true;
-  },
-
-  requireRole(roleName) {
-    if (!this.requireLogin()) return false;
-
-    if (!this.hasRole(roleName)) {
-      alert("Accès refusé : vous ne possédez pas les autorisations nécessaires.");
-      window.location.href = "../index.html";
+      window.location.href = `${PATH_PREFIX}/pages/authentification.html`;
       return false;
     }
     return true;
@@ -145,9 +126,8 @@ const Auth = {
 
     if (!isAdminPage) return true;
 
-    // Accepte le rôle 'administrateur' ou 'admin'
     if (!this.isLoggedIn()) {
-      window.location.href = "/pages/authentification.html";
+      window.location.href = `${PATH_PREFIX}/pages/authentification.html`;
       return false;
     }
 
@@ -156,7 +136,7 @@ const Auth = {
 
     if (!hasAdminAccess) {
       alert("Accès restreint à l'administration MEDEQUIP CI.");
-      window.location.href = "../index.html";
+      window.location.href = `${PATH_PREFIX}/index.html`;
       return false;
     }
 
@@ -164,7 +144,7 @@ const Auth = {
   },
 
   // ======================================================
-  // MISE À JOUR DE L'INTERFACE DE NAVIGATION
+  // MISE À JOUR DU HEADER SUR TOUTES LES PAGES
   // ======================================================
 
   updateHeader() {
@@ -193,15 +173,12 @@ const Auth = {
       logoutButton = document.createElement("button");
       logoutButton.type = "button";
       logoutButton.className = "btn btn-orange logout-button";
+      logoutButton.style.marginLeft = "10px";
       logoutButton.textContent = "Déconnexion";
       logoutButton.addEventListener("click", () => this.logout());
       nav.appendChild(logoutButton);
     }
   },
-
-  // ======================================================
-  // INITIALISATION
-  // ======================================================
 
   init() {
     if (!this.protectAdministration()) return;
