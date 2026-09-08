@@ -2,41 +2,30 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET /api/showrooms
+// GET /api/showrooms - Récupérer tous les showrooms
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM showrooms ORDER BY nom ASC;');
-    res.json(rows);
-  } catch (err) {
-    console.error('Erreur SQL (GET /api/showrooms) :', err);
-    res.status(500).json({ erreur: err.message });
+    const { rows } = await db.query('SELECT * FROM showrooms WHERE actif = true ORDER BY ville ASC');
+    res.json({ success: true, showrooms: rows });
+  } catch (error) {
+    console.error('Erreur showrooms :', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur.' });
   }
 });
 
-// GET /api/showrooms/:id
-router.get('/:id', async (req, res) => {
+// POST /api/showrooms - Ajouter un showroom (Admin)
+router.post('/', async (req, res) => {
   try {
-    const { id } = req.params;
-    const showroomRes = await db.query('SELECT * FROM showrooms WHERE id = $1;', [id]);
-
-    if (showroomRes.rows.length === 0) {
-      return res.status(404).json({ erreur: 'Showroom non trouvé' });
-    }
-
-    const showroom = showroomRes.rows[0];
-
-    const equipementsRes = await db.query(`
-      SELECT p.* 
-      FROM produits p
-      JOIN showroom_produits sp ON p.id = sp.produit_id
-      WHERE sp.showroom_id = $1;
-    `, [id]);
-
-    showroom.equipements = equipementsRes.rows;
-    res.json(showroom);
-  } catch (err) {
-    console.error('Erreur SQL (GET /api/showrooms/:id) :', err);
-    res.status(500).json({ erreur: err.message });
+    const { nom, ville, adresse, telephone, email, horaires, actif } = req.body;
+    const query = `
+      INSERT INTO showrooms (nom, ville, adresse, telephone, email, horaires, actif)
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+    `;
+    const { rows } = await db.query(query, [nom, ville, adresse, telephone, email, horaires, actif ?? true]);
+    res.status(201).json({ success: true, showroom: rows[0] });
+  } catch (error) {
+    console.error('Erreur ajout showroom :', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur.' });
   }
 });
 

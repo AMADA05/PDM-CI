@@ -2,11 +2,10 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-// 1. Déclarer l'application Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 2. Configuration CORS pour autoriser GitHub Pages et le dev local
+// Configuration CORS
 app.use(cors({
   origin: [
     'https://amada05.github.io',
@@ -17,24 +16,29 @@ app.use(cors({
   credentials: true
 }));
 
-// 3. Middlewares
 app.use(express.json());
 
-// 4. Importer les routes
+// Import des routes
 const authRoutes = require('./routes/auth');
 const produitsRoutes = require('./routes/produits');
 const showroomsRoutes = require('./routes/showrooms');
+const devisRoutes = require('./routes/devis');
+const actualitesRoutes = require('./routes/actualites');
+const utilisateursRoutes = require('./routes/utilisateurs');
 
-// 5. Routes de l'API
+// Déclaration des endpoints API
 app.get('/', (req, res) => {
-  res.json({ message: 'Bienvenue sur l\'API PDM CI / PDM.MEDEQUIP' });
+  res.json({ message: 'Bienvenue sur l\'API PDM CI / MEDEQUIP CI' });
 });
 
 app.use('/api/auth', authRoutes);
 app.use('/api/produits', produitsRoutes);
 app.use('/api/showrooms', showroomsRoutes);
-
-// 6. Démarrage du serveur
+app.use('/api/devis', devisRoutes);
+app.use('/api/actualites', actualitesRoutes);
+app.use('/api/utilisateurs', utilisateursRoutes);
+const contratsRoutes = require('./routes/contrats_maintenance');
+app.use('/api/contrats', contratsRoutes);
 app.listen(PORT, () => {
   console.log(`Serveur API lancé sur le port ${PORT}`);
 });
