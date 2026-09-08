@@ -1,12 +1,13 @@
-// ==========================================================
-// PDM CI
-// PAGE DÉTAIL SHOWROOM
-// ==========================================================
-// Ce fichier gère uniquement la page showroom-detail.html.
-// Les données sont récupérées depuis data/data.js.
-// ==========================================================
 
+// Détecte automatiquement si on est sur GitHub Pages ou en local
+const BASE_PATH = window.location.pathname.includes('/PDM-CI/') ? '/PDM-CI' : '';
 
+// Exemple de redirection pour déconnexion ou expulsion :
+function deconnexion() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = `${BASE_PATH}/index.html`;
+}
 // ==========================================================
 // 1. RÉCUPÉRATION DE L'ID DU SHOWROOM
 // Exemple :

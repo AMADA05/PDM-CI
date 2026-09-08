@@ -1,12 +1,13 @@
-// ============================================================
-// PDM CI — PAGE SERVICES
-// Phase 1 : données fictives.
-// ============================================================
+// Détecte automatiquement si on est sur GitHub Pages ou en local
+const BASE_PATH = window.location.pathname.includes('/PDM-CI/') ? '/PDM-CI' : '';
 
-// ------------------------------------------------------------
-// DONNÉES DES SERVICES
-// Ces données pourront plus tard venir de la base de données.
-// ------------------------------------------------------------
+// Exemple de redirection pour déconnexion ou expulsion :
+function deconnexion() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = `${BASE_PATH}/index.html`;
+}
+
 const services = [
   {
     id: "service_conseil",

@@ -1,4 +1,19 @@
-/* ============================================================
+// Détecte automatiquement si on est sur GitHub Pages ou en local
+const BASE_PATH = window.location.pathname.includes('/PDM-CI/') ? '/PDM-CI' : '';
+
+// Exemple de redirection pour déconnexion ou expulsion :
+function deconnexion() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = `${BASE_PATH}/index.html`;
+}
+
+// Exemple de redirection pour déconnexion ou expulsion :
+function deconnexion() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = `${BASE_PATH}/index.html`;
+}/* ============================================================
    PDM CI — DEVIS
    Logique spécifique à cette page — données fictives Phase 1.
    ============================================================ */

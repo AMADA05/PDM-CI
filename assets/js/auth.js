@@ -1,6 +1,15 @@
 // ==========================================================
 // PDM-CI — GESTION GLOBALE DE L'AUTHENTIFICATION & DU TOKEN JWT
 // ==========================================================
+// Détecte automatiquement si on est sur GitHub Pages ou en local
+const BASE_PATH = window.location.pathname.includes('/PDM-CI/') ? '/PDM-CI' : '';
+
+// Exemple de redirection pour déconnexion ou expulsion :
+function deconnexion() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = `${BASE_PATH}/index.html`;
+}
 
 const Auth = {
   // ======================================================
@@ -124,7 +133,7 @@ const Auth = {
 
     if (!this.hasRole(roleName)) {
       alert("Accès refusé : vous ne possédez pas les autorisations nécessaires.");
-      window.location.href = "/index.html";
+      window.location.href = "../index.html";
       return false;
     }
     return true;
@@ -147,7 +156,7 @@ const Auth = {
 
     if (!hasAdminAccess) {
       alert("Accès restreint à l'administration MEDEQUIP CI.");
-      window.location.href = "/index.html";
+      window.location.href = "../index.html";
       return false;
     }
 
