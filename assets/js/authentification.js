@@ -4,7 +4,7 @@
 // Détection automatique : Local vs Production
 const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:5000"
-  : "https://votre-backend-sur-render.onrender.com"; // Remplacer par l'URL finale de votre backend hébergé
+  : "https://pdm-ci.onrender.com";
 
 const API_AUTH_URL = `${API_BASE_URL}/api/auth`;
 

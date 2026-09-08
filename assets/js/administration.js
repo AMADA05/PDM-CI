@@ -2,7 +2,11 @@
    PDM-CI — ADMINISTRATION
    CONNEXION COMPLÈTE BASE DE DONNÉES POSTGRESQL & API
 ========================================================== */
-const API_BASE = "http://localhost:5000/api/produits";
+const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://localhost:5000"
+  : "https://pdm-ci.onrender.com";
+
+const API_BASE = `${API_BASE_URL}/api/produits`;
 const TOKEN_KEY = "pdm_token";
 
 const navItems = document.querySelectorAll(".nav-item");
