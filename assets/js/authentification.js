@@ -6,7 +6,7 @@ const API_BASE_URL = (window.location.hostname === "localhost" || window.locatio
   ? "http://localhost:5000"
   : "https://pdm-ci.onrender.com";
 
-const API_AUTH_URL = `${API_BASE_URL}/api/auth`;
+const API_URL = `${API_BASE_URL}/api/auth`;
 
 const loginTab = document.getElementById("login-tab");
 const registerTab = document.getElementById("register-tab");
