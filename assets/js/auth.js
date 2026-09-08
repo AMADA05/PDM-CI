@@ -46,22 +46,29 @@ const Auth = {
   // GESTION DES RÔLES ET AUTORISATIONS
   // ======================================================
 
+  // ======================================================
+  // GESTION DES RÔLES ET AUTORISATIONS
+  // ======================================================
+
   getRoles() {
     const user = this.getUser();
     if (!user) return [];
 
-    const rolesArray = user.roles || user.roles_noms || (user.role ? [user.role] : []);
+    // Récupération souple des rôles (tableau, objet ou chaîne simple)
+    const rawRoles = user.roles || user.roles_noms || user.role || [];
     
-    if (!Array.isArray(rolesArray)) {
-      return typeof rolesArray === "string" ? [rolesArray.toLowerCase()] : [];
+    if (Array.isArray(rawRoles)) {
+      return rawRoles.map(r => {
+        if (typeof r === "string") return r.toLowerCase();
+        return r?.nom ? String(r.nom).toLowerCase() : "";
+      }).filter(Boolean);
     }
 
-    return rolesArray
-      .map(role => {
-        if (typeof role === "string") return role.toLowerCase();
-        return role?.nom ? String(role.nom).toLowerCase() : null;
-      })
-      .filter(Boolean);
+    if (typeof rawRoles === "string") {
+      return [rawRoles.toLowerCase()];
+    }
+
+    return [];
   },
 
   hasRole(roleName) {
@@ -85,9 +92,12 @@ const Auth = {
   // ======================================================
 
   getDashboardUrl() {
+    const user = this.getUser();
     const roles = this.getRoles();
+    const isAdminEmail = user?.email?.toLowerCase() === "admin@pdmci.com";
+    const hasAdminRole = roles.some(role => role.includes("admin") || role.includes("administrateur"));
 
-    if (roles.includes("administrateur") || roles.includes("admin")) {
+    if (isAdminEmail || hasAdminRole) {
       return `${PATH_PREFIX}/pages/administration.html`;
     }
     return `${PATH_PREFIX}/index.html`;
@@ -131,10 +141,14 @@ const Auth = {
       return false;
     }
 
+    const user = this.getUser();
     const roles = this.getRoles();
-    const hasAdminAccess = roles.includes("administrateur") || roles.includes("admin");
 
-    if (!hasAdminAccess) {
+    // Double sécurité : validation par l'email de l'admin OU par la présence du rôle
+    const isAdminEmail = user?.email?.toLowerCase() === "admin@pdmci.com";
+    const hasAdminRole = roles.some(role => role.includes("admin") || role.includes("administrateur"));
+
+    if (!isAdminEmail && !hasAdminRole) {
       alert("Accès restreint à l'administration MEDEQUIP CI.");
       window.location.href = `${PATH_PREFIX}/index.html`;
       return false;
@@ -142,7 +156,6 @@ const Auth = {
 
     return true;
   },
-
   // ======================================================
   // MISE À JOUR DU HEADER SUR TOUTES LES PAGES
   // ======================================================
