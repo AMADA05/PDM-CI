@@ -272,6 +272,133 @@ async function submitProductForm(event) {
       body: JSON.stringify(payload)
     });
 
+// ==========================================================
+// AJOUT : CHARGEMENT DES DEVIS ET CONTRATS
+// ==========================================================
+
+// URLs API
+const API_DEVIS = `${API_BASE_URL}/api/devis`;
+const API_CONTRATS = `${API_BASE_URL}/api/contrats`;
+
+// Extension de la fonction showSection pour charger les nouvelles sections
+const originalShowSection = showSection;
+showSection = function(sectionName) {
+  originalShowSection(sectionName);
+
+  if (sectionName === "devis") loadDevis();
+  if (sectionName === "contrats") loadContrats();
+};
+
+// ----------------------------------------------------------
+// 1. GESTION DES DEMANDES DE DEVIS
+// ----------------------------------------------------------
+async function loadDevis() {
+  const devisBody = document.querySelector("#section-devis tbody");
+  if (!devisBody) return;
+
+  devisBody.innerHTML = `<tr><td colspan="6" class="loading-state">Chargement des demandes de devis depuis PostgreSQL...</td></tr>`;
+
+  try {
+    const response = await fetch(API_DEVIS, { headers: apiHeaders() });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Erreur de chargement des devis.");
+    }
+
+    renderDevis(data.devis || []);
+  } catch (error) {
+    console.error("Erreur chargement devis :", error);
+    devisBody.innerHTML = `<tr><td colspan="6" class="error-state">${escapeHtml(error.message)}</td></tr>`;
+  }
+}
+
+function renderDevis(list) {
+  const devisBody = document.querySelector("#section-devis tbody");
+  if (!devisBody) return;
+
+  if (!list.length) {
+    devisBody.innerHTML = `<tr><td colspan="6" class="empty-state">Aucune demande de devis enregistrée.</td></tr>`;
+    return;
+  }
+
+  devisBody.innerHTML = list.map(item => `
+    <tr>
+      <td><strong>${escapeHtml(item.nom)} ${escapeHtml(item.prenom || "")}</strong><br><small>${escapeHtml(item.structure || "Particulier")}</small></td>
+      <td>${escapeHtml(item.email)}<br><small>${escapeHtml(item.telephone)}</small></td>
+      <td>${escapeHtml(item.produit_nom || "Demande générale")}</td>
+      <td>${escapeHtml(item.ville || "Non précisée")}</td>
+      <td><span class="status ${item.statut === 'Traité' ? 'active' : 'draft'}">${escapeHtml(item.statut || "Nouveau")}</span></td>
+      <td>
+        <button class="table-action" onclick="updateDevisStatut(${item.id}, 'Traité')">Marquer Traité</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function updateDevisStatut(id, nouveauStatut) {
+  try {
+    const response = await fetch(`${API_DEVIS}/${id}/statut`, {
+      method: "PUT",
+      headers: apiHeaders(),
+      body: JSON.stringify({ statut: nouveauStatut })
+    });
+    const data = await response.json();
+    if (data.success) {
+      loadDevis();
+    }
+  } catch (error) {
+    alert("Impossible de mettre à jour le statut du devis.");
+  }
+}
+
+// ----------------------------------------------------------
+// 2. GESTION DES CONTRATS DE MAINTENANCE
+// ----------------------------------------------------------
+async function loadContrats() {
+  const contratsBody = document.querySelector("#section-contrats tbody");
+  if (!contratsBody) return;
+
+  contratsBody.innerHTML = `<tr><td colspan="6" class="loading-state">Chargement des contrats de maintenance...</td></tr>`;
+
+  try {
+    const response = await fetch(API_CONTRATS, { headers: apiHeaders() });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Erreur de chargement des contrats.");
+    }
+
+    renderContrats(data.contrats || []);
+  } catch (error) {
+    console.error("Erreur chargement contrats :", error);
+    contratsBody.innerHTML = `<tr><td colspan="6" class="error-state">${escapeHtml(error.message)}</td></tr>`;
+  }
+}
+
+function renderContrats(list) {
+  const contratsBody = document.querySelector("#section-contrats tbody");
+  if (!contratsBody) return;
+
+  if (!list.length) {
+    contratsBody.innerHTML = `<tr><td colspan="6" class="empty-state">Aucun contrat de maintenance actif.</td></tr>`;
+    return;
+  }
+
+  contratsBody.innerHTML = list.map(c => `
+    <tr>
+      <td><strong>${escapeHtml(c.client_nom)}</strong><br><small>${escapeHtml(c.client_telephone)}</small></td>
+      <td>${escapeHtml(c.equipement)}</td>
+      <td>${escapeHtml(c.type_contrat)}</td>
+      <td>Du ${new Date(c.date_debut).toLocaleDateString()} au ${new Date(c.date_fin).toLocaleDateString()}</td>
+      <td><span class="status ${c.statut === 'Actif' ? 'active' : 'draft'}">${escapeHtml(c.statut)}</span></td>
+      <td>
+        <button class="table-action danger" onclick="resilierContrat(${c.id})">Terminer</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok || !data.success) {
