@@ -322,7 +322,7 @@ select {
 
 
 /* ==========================================================
-   BOUTONS
+   BOUTONS & ACTIONS
 ========================================================== */
 
 .primary-button {
@@ -343,6 +343,12 @@ select {
 }
 
 
+.table-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .table-action {
   padding: 6px 10px;
   border: 1px solid var(--border);
@@ -352,6 +358,14 @@ select {
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.table-action.danger {
+  color: #dc2626;
+}
+
+.table-action:hover {
+  background: #f5f7f8;
 }
 
 
@@ -471,121 +485,6 @@ select {
 
 
 /* ==========================================================
-   ACTIVITÉ
-========================================================== */
-
-.activity-list {
-  display: flex;
-  flex-direction: column;
-}
-
-
-.activity-item {
-  display: grid;
-  grid-template-columns: 10px 1fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-
-.activity-item:last-child {
-  border-bottom: 0;
-}
-
-
-.activity-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-
-.activity-dot.green {
-  background: var(--green);
-}
-
-
-.activity-dot.orange {
-  background: var(--orange);
-}
-
-
-.activity-dot.blue {
-  background: var(--blue);
-}
-
-
-.activity-item strong,
-.activity-item small {
-  display: block;
-}
-
-
-.activity-item strong {
-  color: var(--dark);
-  font-size: 13px;
-}
-
-
-.activity-item small {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-
-.activity-item time {
-  color: var(--muted);
-  font-size: 10px;
-}
-
-
-/* ==========================================================
-   PROGRESSION
-========================================================== */
-
-.progress-item {
-  margin-bottom: 22px;
-}
-
-
-.progress-item > div:first-child {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-
-.progress-item span,
-.progress-item strong {
-  font-size: 12px;
-}
-
-
-.progress-item strong {
-  color: var(--green);
-}
-
-
-.progress {
-  height: 7px;
-  overflow: hidden;
-  border-radius: 20px;
-  background: #edf0f2;
-}
-
-
-.progress span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--green);
-}
-
-
-/* ==========================================================
    TABLEAUX
 ========================================================== */
 
@@ -648,11 +547,12 @@ td {
 
 
 /* ==========================================================
-   STATUTS
+   STATUTS & BADGES
 ========================================================== */
 
 .status,
-.role {
+.role,
+.badge {
   display: inline-block;
   padding: 5px 8px;
   border-radius: 20px;
@@ -661,7 +561,8 @@ td {
 }
 
 
-.status.active {
+.status.active,
+.badge.active {
   background: rgba(0,135,90,.1);
   color: var(--green);
 }
@@ -740,11 +641,6 @@ td {
 }
 
 
-.showroom-admin-card > button {
-  grid-column: 1 / -1;
-}
-
-
 /* ==========================================================
    CARTES CONTENU
 ========================================================== */
@@ -788,96 +684,13 @@ td {
 
 
 /* ==========================================================
-   RESPONSIVE
+   FORMULAIRES & MODALES
 ========================================================== */
 
-@media (max-width: 1100px) {
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .showroom-admin-grid,
-  .content-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-@media (max-width: 800px) {
-
-  :root {
-    --sidebar-width: 255px;
-  }
-
-  .admin-sidebar {
-    transform: translateX(-100%);
-    transition: .25s;
-  }
-
-  .admin-sidebar.open {
-    transform: translateX(0);
-  }
-
-  .admin-main {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .sidebar-toggle {
-    display: block;
-  }
-
-  .admin-content {
-    padding: 20px;
-  }
-}
-
-
-@media (max-width: 600px) {
-
-  .admin-header {
-    padding: 12px 15px;
-  }
-
-  .admin-user > div:last-child {
-    display: none;
-  }
-
-  .stats-grid,
-  .stats-grid.compact,
-  .showroom-admin-grid,
-  .content-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .section-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .table-tools {
-    flex-direction: column;
-  }
-
-  .admin-content {
-    padding: 15px;
-  }
-}
-/* ==========================================================
-   FORMULAIRES & MODALES (RENDU AMÉLIORÉ & TAILLES RATIONALISÉES)
-========================================================== */
-
-/* Bloquer le défilement du fond à l'ouverture */
 body.modal-open { 
   overflow: hidden; 
 }
 
-/* Conteneur principal de la modale */
 .admin-modal { 
   display: none; 
   position: fixed; 
@@ -892,7 +705,6 @@ body.modal-open {
   padding: 20px; 
 }
 
-/* Arrière-plan assombri et flouté */
 .admin-modal-overlay { 
   position: absolute; 
   inset: 0; 
@@ -900,11 +712,10 @@ body.modal-open {
   backdrop-filter: blur(4px); 
 }
 
-/* Fenêtre de la modale */
 .admin-modal-content { 
   position: relative; 
   width: 100%; 
-  max-width: 680px; /* Taille optimale pour l'ensemble des formulaires */
+  max-width: 680px; 
   max-height: 88vh; 
   overflow-y: auto; 
   background: #ffffff; 
@@ -919,7 +730,6 @@ body.modal-open {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Header de la modale */
 .admin-modal-header { 
   display: flex; 
   align-items: center;
@@ -952,7 +762,6 @@ body.modal-open {
   background: var(--border);
 }
 
-/* Structure des formulaires */
 .admin-modal-content form { 
   display: flex;
   flex-direction: column;
@@ -966,7 +775,6 @@ body.modal-open {
   gap: 16px; 
 }
 
-/* Champs et labels */
 .admin-modal-content label { 
   display: flex; 
   flex-direction: column;
@@ -1002,7 +810,6 @@ body.modal-open {
   min-height: 90px; 
 }
 
-/* Actions au bas du formulaire */
 .modal-actions { 
   display: flex; 
   justify-content: flex-end; 
@@ -1028,17 +835,26 @@ body.modal-open {
   background: #f5f7f8;
 }
 
-/* Adaptation Mobile */
-@media (max-width: 640px) {
-  .form-grid { 
-    grid-template-columns: 1fr; 
-  }
-  
-  .modal-actions { 
-    flex-direction: column-reverse; 
-  }
-  
-  .modal-actions button { 
-    width: 100%; 
-  }
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .showroom-admin-grid, .content-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 800px) {
+  .admin-sidebar { transform: translateX(-100%); transition: .25s; }
+  .admin-sidebar.open { transform: translateX(0); }
+  .admin-main { width: 100%; margin-left: 0; }
+  .sidebar-toggle { display: block; }
+  .admin-content { padding: 20px; }
+}
+
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .modal-actions { flex-direction: column-reverse; }
+  .modal-actions button { width: 100%; }
 }

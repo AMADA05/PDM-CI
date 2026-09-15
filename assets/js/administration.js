@@ -11,6 +11,7 @@ const TOKEN_KEY = "pdm_token";
 // Endpoints
 const API_PRODUITS = `${API_BASE_URL}/api/produits`;
 const API_SHOWROOMS = `${API_BASE_URL}/api/showrooms`;
+const API_CLIENTS = `${API_BASE_URL}/api/clients`;
 const API_ACTUALITES = `${API_BASE_URL}/api/actualites`;
 const API_UTILISATEURS = `${API_BASE_URL}/api/utilisateurs`;
 const API_DEVIS = `${API_BASE_URL}/api/devis`;
@@ -28,16 +29,17 @@ const modal = document.getElementById("adminModal");
 
 const sectionInfo = {
   dashboard: { title: "Tableau de bord", subtitle: "Vue générale de l'activité PDM CI" },
-  produits: { title: "Produits", subtitle: "Gestion du catalogue des équipements" },
-  showrooms: { title: "Showrooms", subtitle: "Gestion des points de vente MEDEQUIP CI" },
+  produits: { title: "Produits & Catalogues", subtitle: "Gestion et attribution des équipements" },
+  showrooms: { title: "Showrooms & Gestionnaires", subtitle: "Gestion des boutiques et comptes gestionnaires" },
+  clients: { title: "Clients & Équipements", subtitle: "Gestion des clients et de leurs appareils installés" },
   services: { title: "Services", subtitle: "Gestion des services proposés par MEDEQUIP CI" },
   actualites: { title: "Actualités", subtitle: "Gestion des informations publiées sur PDM CI" },
-  utilisateurs: { title: "Utilisateurs", subtitle: "Gestion des comptes et des rôles" },
-  devis: { title: "Demandes de devis", subtitle: "Suivi des demandes commerciales reçues" },
-  contrats: { title: "Contrats de Maintenance", subtitle: "Gestion des contrats biomédicaux" }
+  utilisateurs: { title: "Utilisateurs & Accès", subtitle: "Gestion globale des comptes et rôles" },
+  devis: { title: "Demandes de devis & Commandes", subtitle: "Suivi centralisé des devis et commandes" },
+  contrats: { title: "Contrats de Maintenance", subtitle: "Attribution des contrats sur le matériel client" }
 };
 
-let cacheData = { produits: [], showrooms: [], actualites: [], utilisateurs: [], devis: [], contrats: [] };
+let cacheData = { produits: [], showrooms: [], clients: [], actualites: [], utilisateurs: [], devis: [], contrats: [] };
 
 function getToken() { return localStorage.getItem(TOKEN_KEY); }
 
@@ -59,7 +61,7 @@ function closeModal() {
   document.body.classList.remove("modal-open");
 }
 
-// Navigation entre les onglets
+// Navigation
 function showSection(sectionName) {
   navItems.forEach(item => item.classList.toggle("active", item.dataset.section === sectionName));
   sections.forEach(section => section.classList.toggle("active", section.id === `section-${sectionName}`));
@@ -71,10 +73,10 @@ function showSection(sectionName) {
   }
   sidebar?.classList.remove("open");
 
-  // Chargement à la demande
   if (sectionName === "dashboard") loadDashboard();
   if (sectionName === "produits") loadProducts();
   if (sectionName === "showrooms") loadShowrooms();
+  if (sectionName === "clients") loadClients();
   if (sectionName === "actualites") loadActualites();
   if (sectionName === "utilisateurs") loadUtilisateurs();
   if (sectionName === "devis") loadDevis();
@@ -85,63 +87,74 @@ navItems.forEach(item => item.addEventListener("click", () => showSection(item.d
 sidebarToggle?.addEventListener("click", () => sidebar?.classList.toggle("open"));
 
 // ==========================================================
-// 1. DASHBOARD & STATISTIQUES DYNAMIQUES
+// 1. DASHBOARD
 // ==========================================================
 async function loadDashboard() {
   try {
-    const [pRes, sRes, uRes, dRes] = await Promise.all([
+    const [pRes, sRes, uRes, dRes, cRes] = await Promise.all([
       fetch(API_PRODUITS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({})),
       fetch(API_SHOWROOMS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({})),
       fetch(API_UTILISATEURS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({})),
-      fetch(API_DEVIS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({}))
+      fetch(API_DEVIS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({})),
+      fetch(API_CLIENTS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({}))
     ]);
 
     document.getElementById("stat-produits").textContent = pRes.products?.length || pRes.data?.length || 0;
     document.getElementById("stat-showrooms").textContent = sRes.showrooms?.length || 0;
     document.getElementById("stat-utilisateurs").textContent = uRes.utilisateurs?.length || 0;
     document.getElementById("stat-devis").textContent = dRes.devis?.length || 0;
+    const clientStat = document.getElementById("stat-clients");
+    if (clientStat) clientStat.textContent = cRes.clients?.length || 0;
   } catch (err) {
     console.error("Erreur stats dashboard :", err);
   }
 }
 
 // ==========================================================
-// 2. PRODUITS (CRUD)
+// 2. PRODUITS (CRUD + ATTRIBUTION)
 // ==========================================================
 async function loadProducts() {
   const tbody = document.querySelector("#productsTable tbody");
   if (!tbody) return;
-  tbody.innerHTML = `<tr><td colspan="5" class="loading-state">Chargement des équipements...</td></tr>`;
+
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Chargement des produits...</td></tr>`;
 
   try {
-    const res = await fetch(API_PRODUITS, { headers: apiHeaders() });
-    const data = await res.json();
-    cacheData.produits = data.products || data.data || [];
+    const response = await fetch(API_PRODUITS, { headers: apiHeaders() });
+    if (!response.ok) throw new Error("Erreur lors de la récupération des produits");
 
-    if (!cacheData.produits.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Aucun produit en base de données.</td></tr>`;
+    const data = await response.json();
+    const products = Array.isArray(data) ? data : (data.products || data.data || []);
+    cacheData.produits = products;
+
+    if (products.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Aucun produit trouvé.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = cacheData.produits.map(p => `
+    tbody.innerHTML = products.map(product => `
       <tr>
-        <td><strong>${escapeHtml(p.nom)}</strong>${p.reference ? `<br><small>Réf : ${escapeHtml(p.reference)}</small>` : ''}</td>
-        <td>${escapeHtml(p.categorie || "—")}</td>
-        <td><span class="status ${p.actif ? "active" : "draft"}">${p.actif ? "Publié" : "Désactivé"}</span></td>
-        <td>${escapeHtml(p.marque || "—")} ${p.modele ? `(${escapeHtml(p.modele)})` : ""}</td>
-        <td>
-          <button class="table-action" onclick="openProductModal(${p.id})">Modifier</button>
-          <button class="table-action danger" onclick="deleteProduct(${p.id})">Supprimer</button>
+        <td><strong>${escapeHtml(product.reference || 'N/A')}</strong></td>
+        <td>${escapeHtml(product.nom || product.name || 'Sans nom')}</td>
+        <td>${escapeHtml(product.categorie || product.category || 'Général')}</td>
+        <td>${product.prix ? Number(product.prix).toLocaleString('fr-FR') + ' FCFA' : 'Sur devis'}</td>
+        <td><span class="status ${product.statut === 'disponible' ? 'active' : 'draft'}">${escapeHtml(product.statut || 'En stock')}</span></td>
+        <td class="table-actions">
+          <button class="table-action" onclick="openAssignModal('${product.id}')">↗ Attribuer</button>
+          <button class="table-action" onclick="openProductModal('${product.id}')">✏️</button>
+          <button class="table-action danger" onclick="deleteProduct('${product.id}')">🗑️</button>
         </td>
       </tr>
-    `).join("");
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" class="error-state">Erreur de chargement.</td></tr>`;
+    `).join('');
+
+  } catch (error) {
+    console.error("Erreur loadProducts:", error);
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Erreur de chargement des produits.</td></tr>`;
   }
 }
 
 function openProductModal(id = null) {
-  const p = id ? cacheData.produits.find(item => item.id === id) : null;
+  const p = id ? cacheData.produits.find(item => String(item.id) === String(id)) : null;
 
   modal.innerHTML = `
     <div class="admin-modal-overlay" onclick="closeModal()"></div>
@@ -153,8 +166,8 @@ function openProductModal(id = null) {
       <form id="productForm">
         <div class="form-grid">
           <label>Référence <input name="reference" value="${escapeHtml(p?.reference || '')}"></label>
-          <label>Nom * <input name="nom" required value="${escapeHtml(p?.nom || '')}"></label>
-          <label>Catégorie <input name="categorie" value="${escapeHtml(p?.categorie || '')}"></label>
+          <label>Nom * <input name="nom" required value="${escapeHtml(p?.nom || p?.name || '')}"></label>
+          <label>Catégorie <input name="categorie" value="${escapeHtml(p?.categorie || p?.category || '')}"></label>
           <label>Marque <input name="marque" value="${escapeHtml(p?.marque || '')}"></label>
           <label>Modèle <input name="modele" value="${escapeHtml(p?.modele || '')}"></label>
           <label>Prix (FCFA) * <input name="prix" type="number" required value="${p?.prix || 0}"></label>
@@ -172,8 +185,7 @@ function openProductModal(id = null) {
 
   document.getElementById("productForm").onsubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const payload = Object.fromEntries(formData.entries());
+    const payload = Object.fromEntries(new FormData(e.target).entries());
     payload.actif = true;
 
     const url = p ? `${API_PRODUITS}/${p.id}` : API_PRODUITS;
@@ -185,6 +197,82 @@ function openProductModal(id = null) {
   };
 }
 
+async function openAssignModal(productId) {
+  const product = cacheData.produits.find(p => String(p.id) === String(productId));
+  if (!product) return;
+
+  // Charger les showrooms et clients
+  const [sRes, cRes] = await Promise.all([
+    fetch(API_SHOWROOMS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({ showrooms: [] })),
+    fetch(API_CLIENTS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({ clients: [] }))
+  ]);
+
+  const showrooms = sRes.showrooms || [];
+  const clients = cRes.clients || [];
+
+  modal.innerHTML = `
+    <div class="admin-modal-overlay" onclick="closeModal()"></div>
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h2>Attribuer : ${escapeHtml(product.nom || product.name)}</h2>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form id="assignForm">
+        <label>Type d'attribution *
+          <select id="assignType" name="type_attribution" required onchange="toggleAssignSelects(this.value)">
+            <option value="showroom">À un Showroom (Stock boutique)</option>
+            <option value="client">À un Client / Laboratoire (Équipement installé)</option>
+          </select>
+        </label>
+
+        <div id="showroomSelectGroup">
+          <label>Sélectionner le Showroom *
+            <select name="showroom_id">
+              ${showrooms.map(s => `<option value="${s.id}">${escapeHtml(s.nom)} (${escapeHtml(s.ville)})</option>`).join("")}
+            </select>
+          </label>
+        </div>
+
+        <div id="clientSelectGroup" style="display:none;">
+          <label>Sélectionner le Client / Établissement *
+            <select name="client_id">
+              ${clients.map(c => `<option value="${c.id}">${escapeHtml(c.nom)} - ${escapeHtml(c.ville || '')}</option>`).join("")}
+            </select>
+          </label>
+          <label>Numéro de Série de l'appareil *
+            <input name="numero_serie" placeholder="Ex: SN-99823-X">
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" onclick="closeModal()">Annuler</button>
+          <button type="submit" class="primary-button">Confirmer l'attribution</button>
+        </div>
+      </form>
+    </div>
+  `;
+  modal.classList.add("open");
+
+  document.getElementById("assignForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const payload = Object.fromEntries(new FormData(e.target).entries());
+    payload.produit_id = productId;
+
+    const endpoint = payload.type_attribution === "showroom" 
+      ? `${API_SHOWROOMS}/attribuer-produit` 
+      : `${API_CLIENTS}/attribuer-equipement`;
+
+    await fetch(endpoint, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
+    alert("Attribution enregistrée avec succès !");
+    closeModal();
+  };
+}
+
+function toggleAssignSelects(val) {
+  document.getElementById("showroomSelectGroup").style.display = (val === "showroom") ? "block" : "none";
+  document.getElementById("clientSelectGroup").style.display = (val === "client") ? "block" : "none";
+}
+
 async function deleteProduct(id) {
   if (!confirm("Confirmer la suppression de cet équipement ?")) return;
   await fetch(`${API_PRODUITS}/${id}`, { method: "DELETE", headers: apiHeaders() });
@@ -192,7 +280,7 @@ async function deleteProduct(id) {
 }
 
 // ==========================================================
-// 3. SHOWROOMS (LISTE & AJOUT)
+// 3. SHOWROOMS (BOUTIQUE + CRÉATION GESTIONNAIRE)
 // ==========================================================
 async function loadShowrooms() {
   const container = document.getElementById("showroomsContainer");
@@ -214,8 +302,9 @@ async function loadShowrooms() {
         <div class="showroom-placeholder">${s.ville ? s.ville.substring(0, 2).toUpperCase() : 'SH'}</div>
         <div>
           <h3>${escapeHtml(s.nom)}</h3>
+          <p><strong>Gestionnaire:</strong> ${escapeHtml(s.nom_gestionnaire || 'Non assigné')}</p>
           <p>${escapeHtml(s.ville)} — ${escapeHtml(s.adresse || '')}</p>
-          <small>Tél: ${escapeHtml(s.telephone || 'N/A')}</small>
+          <small>Tél: ${escapeHtml(s.telephone || 'N/A')} | Email: ${escapeHtml(s.email || 'N/A')}</small>
         </div>
       </article>
     `).join("");
@@ -229,18 +318,22 @@ function openShowroomModal() {
     <div class="admin-modal-overlay" onclick="closeModal()"></div>
     <div class="admin-modal-content">
       <div class="admin-modal-header">
-        <h2>Ajouter un Showroom</h2>
+        <h2>Créer un Showroom & Compte Gestionnaire</h2>
         <button class="modal-close" onclick="closeModal()">×</button>
       </div>
       <form id="showroomForm">
-        <label>Nom du Showroom * <input name="nom" required></label>
-        <label>Ville * <input name="ville" required></label>
-        <label>Adresse * <input name="adresse" required></label>
-        <label>Téléphone <input name="telephone"></label>
-        <label>Email <input name="email" type="email"></label>
+        <div class="form-grid">
+          <label>Nom du Showroom * <input name="nom" required placeholder="Ex: Showroom Abidjan Sud"></label>
+          <label>Ville * <input name="ville" required placeholder="Ex: Abidjan"></label>
+          <label>Nom complet du Gestionnaire * <input name="nom_gestionnaire" required placeholder="Ex: Jean Marc"></label>
+          <label>Téléphone du Gestionnaire * <input name="telephone" required placeholder="+225 07..."></label>
+          <label>Email du Showroom (Login) * <input name="email" type="email" required placeholder="showroom.sud@medequip.ci"></label>
+          <label>Mot de passe de connexion * <input name="password" type="password" required></label>
+        </div>
+        <label>Adresse physique du Showroom * <input name="adresse" required placeholder="Ex: Zone 4, Rue des Brasseries"></label>
         <div class="modal-actions">
           <button type="button" class="secondary-button" onclick="closeModal()">Annuler</button>
-          <button type="submit" class="primary-button">Créer</button>
+          <button type="submit" class="primary-button">Créer le Showroom</button>
         </div>
       </form>
     </div>
@@ -259,7 +352,111 @@ function openShowroomModal() {
 }
 
 // ==========================================================
-// 4. ACTUALITÉS
+// 4. CLIENTS & ÉQUIPEMENTS CLIENTS
+// ==========================================================
+async function loadClients() {
+  const tbody = document.querySelector("#clientsTable tbody");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="5" class="loading-state">Chargement des clients...</td></tr>`;
+
+  try {
+    const res = await fetch(API_CLIENTS, { headers: apiHeaders() });
+    const data = await res.json();
+    cacheData.clients = data.clients || [];
+
+    if (!cacheData.clients.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Aucun client enregistré.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = cacheData.clients.map(c => `
+      <tr>
+        <td><strong>${escapeHtml(c.nom)}</strong><br><small>${escapeHtml(c.type_etablissement || 'Hôpital / Labo')}</small></td>
+        <td>${escapeHtml(c.telephone || 'N/A')}<br><small>${escapeHtml(c.ville || '')}</small></td>
+        <td>${escapeHtml(c.email)}</td>
+        <td><span class="badge active">${c.nb_equipements || 0} appareil(s)</span></td>
+        <td>
+          <button class="table-action" onclick="openClientEquipmentsModal(${c.id})">⚙️ Appareils</button>
+        </td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5" class="error-state">Erreur lors du chargement des clients.</td></tr>`;
+  }
+}
+
+function openClientModal() {
+  modal.innerHTML = `
+    <div class="admin-modal-overlay" onclick="closeModal()"></div>
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h2>Ajouter un Client (Hôpital / Laboratoire)</h2>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form id="clientForm">
+        <div class="form-grid">
+          <label>Nom de l'établissement * <input name="nom" required placeholder="Ex: Laboratoire CHU Bouaké"></label>
+          <label>Type d'établissement <input name="type_etablissement" placeholder="Ex: Hôpital Général"></label>
+          <label>Téléphone de contact * <input name="telephone" required></label>
+          <label>Ville * <input name="ville" required></label>
+          <label>Email (Login du client) * <input name="email" type="email" required></label>
+          <label>Mot de passe initial * <input name="password" type="password" required></label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" onclick="closeModal()">Annuler</button>
+          <button type="submit" class="primary-button">Créer le client</button>
+        </div>
+      </form>
+    </div>
+  `;
+  modal.classList.add("open");
+
+  document.getElementById("clientForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const payload = Object.fromEntries(new FormData(e.target).entries());
+
+    await fetch(API_CLIENTS, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
+    closeModal();
+    loadClients();
+  };
+}
+
+async function openClientEquipmentsModal(clientId) {
+  const res = await fetch(`${API_CLIENTS}/${clientId}/equipements`, { headers: apiHeaders() });
+  const data = await res.json();
+  const equipements = data.equipements || [];
+
+  modal.innerHTML = `
+    <div class="admin-modal-overlay" onclick="closeModal()"></div>
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h2>Appareils installés chez le client</h2>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div style="padding: 20px;">
+        ${equipements.length === 0 ? '<p>Aucun appareil attribué à ce client.</p>' : `
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+            ${equipements.map(eq => `
+              <li style="padding:10px; border:1px solid #e5e7eb; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <strong>${escapeHtml(eq.nom_produit)}</strong><br>
+                  <small>N° Série: ${escapeHtml(eq.numero_serie || 'N/A')} | Ajouté le: ${new Date(eq.date_attribution).toLocaleDateString()}</small>
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+        `}
+      </div>
+      <div class="modal-actions" style="padding:15px;">
+        <button type="button" class="secondary-button" onclick="closeModal()">Fermer</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add("open");
+}
+
+// ==========================================================
+// 5. ACTUALITÉS
 // ==========================================================
 async function loadActualites() {
   const container = document.getElementById("newsContainer");
@@ -290,7 +487,7 @@ async function loadActualites() {
 }
 
 // ==========================================================
-// 5. UTILISATEURS
+// 6. UTILISATEURS
 // ==========================================================
 async function loadUtilisateurs() {
   const tbody = document.querySelector("#usersTable tbody");
@@ -312,7 +509,7 @@ async function loadUtilisateurs() {
         <td><strong>${escapeHtml(u.nom)}</strong></td>
         <td>${escapeHtml(u.email)}</td>
         <td>${escapeHtml(u.telephone || "—")}</td>
-        <td><span class="role admin">${Array.isArray(u.roles) ? escapeHtml(u.roles.join(", ")) : "Utilisateur"}</span></td>
+        <td><span class="role admin">${Array.isArray(u.roles) ? escapeHtml(u.roles.join(", ")) : escapeHtml(u.role || "Utilisateur")}</span></td>
         <td><button class="table-action">Gérer</button></td>
       </tr>
     `).join("");
@@ -322,7 +519,7 @@ async function loadUtilisateurs() {
 }
 
 // ==========================================================
-// 6. DEMANDES DE DEVIS
+// 7. DEMANDES DE DEVIS
 // ==========================================================
 async function loadDevis() {
   const tbody = document.querySelector("#devisTable tbody");
@@ -364,7 +561,7 @@ async function updateDevisStatut(id, statut) {
 }
 
 // ==========================================================
-// 7. CONTRATS DE MAINTENANCE
+// 8. CONTRATS DE MAINTENANCE
 // ==========================================================
 async function loadContrats() {
   const tbody = document.querySelector("#contratsTable tbody");
@@ -383,7 +580,7 @@ async function loadContrats() {
 
     tbody.innerHTML = cacheData.contrats.map(c => `
       <tr>
-        <td><strong>${escapeHtml(c.client_nom)}</strong><br><small>${escapeHtml(c.client_telephone)}</small></td>
+        <td><strong>${escapeHtml(c.client_nom)}</strong><br><small>${escapeHtml(c.client_telephone || '')}</small></td>
         <td>${escapeHtml(c.equipement)}</td>
         <td>${escapeHtml(c.type_contrat)}</td>
         <td>Du ${new Date(c.date_debut).toLocaleDateString()} au ${new Date(c.date_fin).toLocaleDateString()}</td>
@@ -405,7 +602,10 @@ async function updateContratStatut(id, statut) {
   loadContrats();
 }
 
-function openContratModal() {
+async function openContratModal() {
+  const cRes = await fetch(API_CLIENTS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({ clients: [] }));
+  const clients = cRes.clients || [];
+
   modal.innerHTML = `
     <div class="admin-modal-overlay" onclick="closeModal()"></div>
     <div class="admin-modal-content">
@@ -414,9 +614,13 @@ function openContratModal() {
         <button class="modal-close" onclick="closeModal()">×</button>
       </div>
       <form id="contratForm">
-        <label>Client / Établissement * <input name="client_nom" required></label>
-        <label>Téléphone client * <input name="client_telephone" required></label>
-        <label>Équipement sous contrat * <input name="equipement" required></label>
+        <label>Client / Établissement *
+          <select name="client_id" required id="contratClientSelect">
+            <option value="">Sélectionner un client...</option>
+            ${clients.map(c => `<option value="${c.id}">${escapeHtml(c.nom)}</option>`).join('')}
+          </select>
+        </label>
+        <label>Équipement sous contrat * <input name="equipement" required placeholder="Ex: Automate d'hématologie Sysmex"></label>
         <label>Type de Contrat *
           <select name="type_contrat" required>
             <option value="Préventif">Préventif</option>
@@ -442,6 +646,9 @@ function openContratModal() {
     const payload = Object.fromEntries(new FormData(e.target).entries());
     payload.statut = "Actif";
 
+    const selectedClient = clients.find(c => String(c.id) === String(payload.client_id));
+    if (selectedClient) payload.client_nom = selectedClient.nom;
+
     await fetch(API_CONTRATS, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
     closeModal();
     loadContrats();
@@ -454,6 +661,7 @@ function openContratModal() {
 document.addEventListener("click", e => {
   if (e.target.closest("#btnAddProduct")) openProductModal();
   if (e.target.closest("#btnAddShowroom")) openShowroomModal();
+  if (e.target.closest("#btnAddClient")) openClientModal();
   if (e.target.closest("#btnAddContrat")) openContratModal();
 });
 

@@ -25,6 +25,8 @@ const showroomsRoutes = require('./routes/showrooms');
 const devisRoutes = require('./routes/devis');
 const actualitesRoutes = require('./routes/actualites');
 const utilisateursRoutes = require('./routes/utilisateurs');
+const contratsRoutes = require('./routes/contrats_maintenance');
+const clientsRoutes = require('./routes/clients'); // Nouveau router pour la gestion des clients et appareils
 
 // Déclaration des endpoints API
 app.get('/', (req, res) => {
@@ -37,8 +39,9 @@ app.use('/api/showrooms', showroomsRoutes);
 app.use('/api/devis', devisRoutes);
 app.use('/api/actualites', actualitesRoutes);
 app.use('/api/utilisateurs', utilisateursRoutes);
-const contratsRoutes = require('./routes/contrats_maintenance');
 app.use('/api/contrats', contratsRoutes);
+app.use('/api/clients', clientsRoutes);
+
 app.listen(PORT, () => {
   console.log(`Serveur API lancé sur le port ${PORT}`);
 });

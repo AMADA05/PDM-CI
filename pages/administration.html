@@ -26,11 +26,15 @@
         </button>
         <button class="nav-item" data-section="produits">
           <span class="nav-icon">▣</span>
-          <span>Produits</span>
+          <span>Produits & Catalogues</span>
         </button>
         <button class="nav-item" data-section="showrooms">
           <span class="nav-icon">⌂</span>
-          <span>Showrooms</span>
+          <span>Showrooms & Gestionnaires</span>
+        </button>
+        <button class="nav-item" data-section="clients">
+          <span class="nav-icon">🏥</span>
+          <span>Clients & Équipements</span>
         </button>
         <button class="nav-item" data-section="services">
           <span class="nav-icon">⚙</span>
@@ -42,7 +46,7 @@
         </button>
         <button class="nav-item" data-section="utilisateurs">
           <span class="nav-icon">♙</span>
-          <span>Utilisateurs</span>
+          <span>Utilisateurs & Accès</span>
         </button>
         <button class="nav-item" data-section="devis">
           <span class="nav-icon">▧</span>
@@ -74,7 +78,7 @@
           <div class="admin-avatar">A</div>
           <div>
             <strong id="adminUserName">Administrateur</strong>
-            <span>Espace Gestion</span>
+            <span>Espace Gestion Global</span>
           </div>
         </div>
       </header>
@@ -108,10 +112,10 @@
             </article>
 
             <article class="stat-card">
-              <div class="stat-icon blue">♙</div>
+              <div class="stat-icon blue">🏥</div>
               <div>
-                <span>Utilisateurs</span>
-                <strong id="stat-utilisateurs">0</strong>
+                <span>Clients Labeled</span>
+                <strong id="stat-clients">0</strong>
               </div>
             </article>
 
@@ -129,8 +133,8 @@
         <section class="admin-section" id="section-produits">
           <div class="section-heading">
             <div>
-              <h2>Produits</h2>
-              <p>Gestion du catalogue des équipements.</p>
+              <h2>Produits & Équipements</h2>
+              <p>Gestion du catalogue général et attribution aux showrooms ou clients.</p>
             </div>
             <button class="primary-button" id="btnAddProduct">+ Ajouter un produit</button>
           </div>
@@ -139,11 +143,11 @@
             <div class="table-tools">
               <input type="search" class="admin-search" placeholder="Rechercher un produit..." data-table-search="productsTable">
               <select class="filter-select">
-                <option>Toutes les catégories</option>
-                <option>Laboratoire</option>
-                <option>Imagerie</option>
-                <option>Diagnostic</option>
-                <option>Mobilier médical</option>
+                <option value="">Toutes les catégories</option>
+                <option value="Laboratoire">Laboratoire</option>
+                <option value="Imagerie">Imagerie</option>
+                <option value="Diagnostic">Diagnostic</option>
+                <option value="Mobilier médical">Mobilier médical</option>
               </select>
             </div>
 
@@ -151,10 +155,11 @@
               <table id="productsTable">
                 <thead>
                   <tr>
+                    <th>Réf.</th>
                     <th>Produit</th>
                     <th>Catégorie</th>
+                    <th>Prix (FCFA)</th>
                     <th>Statut</th>
-                    <th>Marque / Modèle</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -164,16 +169,44 @@
           </div>
         </section>
 
-        <!-- SHOWROOMS -->
+        <!-- SHOWROOMS & GESTIONNAIRES -->
         <section class="admin-section" id="section-showrooms">
           <div class="section-heading">
             <div>
-              <h2>Showrooms</h2>
-              <p>Gestion des points de vente MEDEQUIP CI.</p>
+              <h2>Showrooms & Gestionnaires</h2>
+              <p>Création des boutiques et de leurs comptes de gestion dédiés.</p>
             </div>
-            <button class="primary-button" id="btnAddShowroom">+ Ajouter un showroom</button>
+            <button class="primary-button" id="btnAddShowroom">+ Créer un Showroom Gestionnaire</button>
           </div>
           <div class="showroom-admin-grid" id="showroomsContainer"><!-- Dynamic --></div>
+        </section>
+
+        <!-- CLIENTS & ÉQUIPEMENTS -->
+        <section class="admin-section" id="section-clients">
+          <div class="section-heading">
+            <div>
+              <h2>Clients & Équipements Installés</h2>
+              <p>Gestion des établissements (Hôpitaux, Labos) et suivi de leurs machines.</p>
+            </div>
+            <button class="primary-button" id="btnAddClient">+ Ajouter un Client</button>
+          </div>
+
+          <div class="admin-card">
+            <div class="table-wrapper">
+              <table id="clientsTable">
+                <thead>
+                  <tr>
+                    <th>Établissement / Nom</th>
+                    <th>Contact</th>
+                    <th>Email / Identifiant</th>
+                    <th>Appareils Installés</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody><!-- Dynamic --></tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
         <!-- SERVICES -->
@@ -204,8 +237,8 @@
         <section class="admin-section" id="section-utilisateurs">
           <div class="section-heading">
             <div>
-              <h2>Utilisateurs</h2>
-              <p>Gestion des comptes et des rôles.</p>
+              <h2>Utilisateurs & Rôles</h2>
+              <p>Gestion globale de tous les comptes (Admins, Showrooms, Clients, Techniciens).</p>
             </div>
           </div>
 
@@ -231,8 +264,8 @@
         <section class="admin-section" id="section-devis">
           <div class="section-heading">
             <div>
-              <h2>Demandes de devis</h2>
-              <p>Suivi des demandes commerciales reçues via le site web.</p>
+              <h2>Demandes de devis & Commandes</h2>
+              <p>Vue centralisée des requêtes envoyées vers l'ensemble des showrooms.</p>
             </div>
           </div>
 
@@ -260,9 +293,9 @@
           <div class="section-heading">
             <div>
               <h2>Contrats de Maintenance</h2>
-              <p>Suivi et gestion des contrats biomédicaux.</p>
+              <p>Création et attribution des contrats sur les équipements clients.</p>
             </div>
-            <button class="primary-button" id="btnAddContrat">+ Nouveau Contrat</button>
+            <button class="primary-button" id="btnAddContrat">+ Nouveau Contrat Client</button>
           </div>
 
           <div class="admin-card">
@@ -270,8 +303,8 @@
               <table id="contratsTable">
                 <thead>
                   <tr>
-                    <th>Client</th>
-                    <th>Équipement</th>
+                    <th>Client / Établissement</th>
+                    <th>Équipement Lié</th>
                     <th>Type de Contrat</th>
                     <th>Période</th>
                     <th>Statut</th>
