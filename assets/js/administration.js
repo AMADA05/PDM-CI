@@ -12,6 +12,7 @@ const TOKEN_KEY = "pdm_token";
 const API_PRODUITS = `${API_BASE_URL}/api/produits`;
 const API_SHOWROOMS = `${API_BASE_URL}/api/showrooms`;
 const API_CLIENTS = `${API_BASE_URL}/api/clients`;
+const API_PROJETS = `${API_BASE_URL}/api/projets`;
 const API_ACTUALITES = `${API_BASE_URL}/api/actualites`;
 const API_UTILISATEURS = `${API_BASE_URL}/api/utilisateurs`;
 const API_DEVIS = `${API_BASE_URL}/api/devis`;
@@ -32,6 +33,7 @@ const sectionInfo = {
   produits: { title: "Produits & Catalogues", subtitle: "Gestion et attribution des équipements" },
   showrooms: { title: "Showrooms & Gestionnaires", subtitle: "Gestion des boutiques et comptes gestionnaires" },
   clients: { title: "Clients & Équipements", subtitle: "Gestion des clients et de leurs appareils installés" },
+  projets: { title: "Projets réalisés", subtitle: "Gestion des installations et réalisations publiées" },
   services: { title: "Services", subtitle: "Gestion des services proposés par MEDEQUIP CI" },
   actualites: { title: "Actualités", subtitle: "Gestion des informations publiées sur PDM CI" },
   utilisateurs: { title: "Utilisateurs & Accès", subtitle: "Gestion globale des comptes et rôles" },
@@ -39,7 +41,7 @@ const sectionInfo = {
   contrats: { title: "Contrats de Maintenance", subtitle: "Attribution des contrats sur le matériel client" }
 };
 
-let cacheData = { produits: [], showrooms: [], clients: [], actualites: [], utilisateurs: [], devis: [], contrats: [] };
+let cacheData = { produits: [], showrooms: [], clients: [], projets: [], actualites: [], utilisateurs: [], devis: [], contrats: [] };
 
 function getToken() { return localStorage.getItem(TOKEN_KEY); }
 
@@ -77,6 +79,7 @@ function showSection(sectionName) {
   if (sectionName === "produits") loadProducts();
   if (sectionName === "showrooms") loadShowrooms();
   if (sectionName === "clients") loadClients();
+  if (sectionName === "projets") loadProjects();
   if (sectionName === "actualites") loadActualites();
   if (sectionName === "utilisateurs") loadUtilisateurs();
   if (sectionName === "devis") loadDevis();
@@ -101,7 +104,8 @@ async function loadDashboard() {
 
     document.getElementById("stat-produits").textContent = pRes.products?.length || pRes.data?.length || 0;
     document.getElementById("stat-showrooms").textContent = sRes.showrooms?.length || 0;
-    document.getElementById("stat-utilisateurs").textContent = uRes.utilisateurs?.length || 0;
+    const userStat = document.getElementById("stat-utilisateurs");
+    if (userStat) userStat.textContent = uRes.utilisateurs?.length || 0;
     document.getElementById("stat-devis").textContent = dRes.devis?.length || 0;
     const clientStat = document.getElementById("stat-clients");
     if (clientStat) clientStat.textContent = cRes.clients?.length || 0;
@@ -408,8 +412,17 @@ function openShowroomModal() {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(e.target).entries());
     payload.actif = true;
+    payload.gestionnaire_nom = payload.nom_gestionnaire;
+    payload.gestionnaire_email = payload.email;
+    payload.gestionnaire_password = payload.password;
 
-    await fetch(API_SHOWROOMS, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
+    const response = await fetch(API_SHOWROOMS, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      showNotification(data.message || "Erreur lors de la création du showroom.", false);
+      return;
+    }
+    showNotification("Showroom créé avec succès.");
     closeModal();
     loadShowrooms();
   };
@@ -520,7 +533,112 @@ async function openClientEquipmentsModal(clientId) {
 }
 
 // ==========================================================
-// 5. ACTUALITÉS
+// 5. PROJETS RÉALISÉS
+// ==========================================================
+async function loadProjects() {
+  const container = document.getElementById("projectsContainer");
+  if (!container) return;
+  container.innerHTML = `<p>Chargement des projets...</p>`;
+
+  try {
+    const response = await fetch(API_PROJETS, { headers: apiHeaders() });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Erreur de chargement");
+
+    cacheData.projets = data.projets || [];
+    if (!cacheData.projets.length) {
+      container.innerHTML = `<p>Aucun projet enregistré.</p>`;
+      return;
+    }
+
+    container.innerHTML = cacheData.projets.map(project => `
+      <article class="content-card">
+        <span class="news-date">${project.date_realisation ? new Date(project.date_realisation).toLocaleDateString("fr-FR") : "Date non renseignée"}</span>
+        <h3>${escapeHtml(project.titre)}</h3>
+        <p>${escapeHtml(project.description || "Aucune description.")}</p>
+        <p><strong>Client :</strong> ${escapeHtml(project.client || "Non renseigné")}</p>
+        <div class="table-actions">
+          <button class="table-action" onclick="openProjectModal('${project.id}')">✏️ Modifier</button>
+          <button class="table-action danger" onclick="deleteProject('${project.id}')">🗑️ Supprimer</button>
+        </div>
+      </article>
+    `).join("");
+  } catch (error) {
+    console.error("Erreur loadProjects:", error);
+    container.innerHTML = `<p class="error-state">Erreur lors du chargement des projets.</p>`;
+  }
+}
+
+function openProjectModal(id = null) {
+  const project = id ? cacheData.projets.find(item => String(item.id) === String(id)) : null;
+  modal.innerHTML = `
+    <div class="admin-modal-overlay" onclick="closeModal()"></div>
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h2>${project ? "Modifier le projet" : "Ajouter un projet"}</h2>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form id="projectForm">
+        <label>Titre du projet *
+          <input name="titre" required value="${escapeHtml(project?.titre || '')}" placeholder="Ex : Installation d'un laboratoire">
+        </label>
+        <label>Client / établissement
+          <input name="client" value="${escapeHtml(project?.client || '')}" placeholder="Ex : CHU de Bouaké">
+        </label>
+        <label>Date de réalisation
+          <input name="date_realisation" type="date" value="${project?.date_realisation ? String(project.date_realisation).slice(0, 10) : ''}">
+        </label>
+        <label>Description
+          <textarea name="description" placeholder="Décrivez la réalisation...">${escapeHtml(project?.description || '')}</textarea>
+        </label>
+        <label>URL de l'image
+          <input name="image_url" type="url" value="${escapeHtml(project?.image_url || '')}">
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" onclick="closeModal()">Annuler</button>
+          <button type="submit" class="primary-button">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  `;
+  modal.classList.add("open");
+
+  document.getElementById("projectForm").onsubmit = async (event) => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(event.target).entries());
+    const response = await fetch(id ? `${API_PROJETS}/${id}` : API_PROJETS, {
+      method: id ? "PUT" : "POST",
+      headers: apiHeaders(),
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      showNotification(data.error || "Erreur lors de l'enregistrement du projet.", false);
+      return;
+    }
+    showNotification(data.message || "Projet enregistré avec succès.");
+    closeModal();
+    loadProjects();
+  };
+}
+
+async function deleteProject(id) {
+  if (!confirm("Supprimer ce projet ?")) return;
+  const response = await fetch(`${API_PROJETS}/${id}`, {
+    method: "DELETE",
+    headers: apiHeaders(),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    showNotification(data.error || "Erreur lors de la suppression.", false);
+    return;
+  }
+  showNotification("Projet supprimé.");
+  loadProjects();
+}
+
+// ==========================================================
+// 6. ACTUALITÉS
 // ==========================================================
 async function loadActualites() {
   const container = document.getElementById("newsContainer");
@@ -549,8 +667,8 @@ async function loadActualites() {
     container.innerHTML = `<p>Erreur chargement actualités.</p>`;
   }
 }
-// Gestion de la modale
-function closeModal() {
+// Modale legacy utilisée par les formulaires services/actualités/utilisateurs.
+function closeLegacyModal() {
   document.getElementById('modalForm').style.display = 'none';
 }
 
@@ -639,14 +757,14 @@ document.getElementById('btnAddUser')?.addEventListener('click', () => {
 // Fonction générique d'envoi API
 async function sendData(url, method, bodyData) {
   try {
-    const res = await fetch(url, {
+    const res = await fetch(`${API_BASE_URL}${url}`, {
       method: method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: apiHeaders(),
       body: JSON.stringify(bodyData)
     });
     if (res.ok) {
       alert('Enregistré avec succès !');
-      closeModal();
+      closeLegacyModal();
       location.reload();
     } else {
       alert('Erreur lors de l\'enregistrement.');
@@ -818,7 +936,11 @@ async function openContratModal() {
     payload.statut = "Actif";
 
     const selectedClient = clients.find(c => String(c.id) === String(payload.client_id));
-    if (selectedClient) payload.client_nom = selectedClient.nom;
+    if (selectedClient) {
+      payload.client_nom = selectedClient.nom;
+      payload.client_email = selectedClient.email || "";
+      payload.client_telephone = selectedClient.telephone || "";
+    }
 
     await fetch(API_CONTRATS, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
     closeModal();
@@ -833,6 +955,7 @@ document.addEventListener("click", e => {
   if (e.target.closest("#btnAddProduct")) openProductModal();
   if (e.target.closest("#btnAddShowroom")) openShowroomModal();
   if (e.target.closest("#btnAddClient")) openClientModal();
+  if (e.target.closest("#btnAddProject")) openProjectModal();
   if (e.target.closest("#btnAddContrat")) openContratModal();
 });
 

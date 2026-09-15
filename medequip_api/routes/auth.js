@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
 
     // 3. Générer le jeton JWT
     const token = jwt.sign(
-      { id: utilisateur.id, email: utilisateur.email },
+      { id: utilisateur.id, email: utilisateur.email, role: utilisateur.role || 'utilisateur' },
       process.env.JWT_SECRET || 'secret_key_de_secours',
       { expiresIn: '24h' }
     );
@@ -41,7 +41,8 @@ router.post('/login', async (req, res) => {
       utilisateur: {
         id: utilisateur.id,
         nom: utilisateur.nom,
-        email: utilisateur.email
+        email: utilisateur.email,
+        role: utilisateur.role || 'utilisateur'
       }
     });
   } catch (err) {

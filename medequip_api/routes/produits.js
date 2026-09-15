@@ -2,6 +2,19 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
+// GET /api/produits - Récupérer les produits actifs
+router.get('/', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      'SELECT * FROM produits WHERE COALESCE(actif, true) = true ORDER BY nom ASC'
+    );
+    res.json({ success: true, products: rows });
+  } catch (err) {
+    console.error('Erreur récupération produits :', err);
+    res.status(500).json({ success: false, message: 'Erreur serveur.' });
+  }
+});
+
 // POST : Ajouter un produit avec logs d'erreur détaillés
 router.post('/', async (req, res) => {
   console.log('Payload reçu sur POST /api/produits :', req.body);
@@ -118,6 +131,23 @@ router.put('/:id', async (req, res) => {
       success: false, 
       message: `Erreur BD (${err.code || 'SQL'}) : ${err.message}` 
     });
+  }
+});
+
+// DELETE /api/produits/:id - Désactivation plutôt que suppression physique
+router.delete('/:id', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      'UPDATE produits SET actif = false WHERE id = $1 RETURNING id',
+      [req.params.id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Produit introuvable.' });
+    }
+    res.json({ success: true, message: 'Produit supprimé avec succès.' });
+  } catch (err) {
+    console.error('Erreur suppression produit :', err);
+    res.status(500).json({ success: false, message: 'Erreur serveur.' });
   }
 });
 

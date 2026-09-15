@@ -1,13 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const bcrypt = require('bcrypt'); // Pense à vérifier que bcrypt est installé
+const bcrypt = require('bcryptjs');
 
-// POST : Créer un Showroom ET son Gestionnaire (Création d'utilisateur)
+// GET /api/showrooms - Récupérer les showrooms visibles dans l'administration et sur le site
+router.get('/', async (req, res) => {
+  try {
+    const { rows } = await db.query(`
+      SELECT s.*, u.nom AS nom_gestionnaire, u.email AS email_gestionnaire
+      FROM showrooms s
+      LEFT JOIN utilisateurs u ON u.id = s.gestionnaire_id
+      WHERE COALESCE(s.actif, true) = true
+      ORDER BY s.ville ASC, s.nom ASC
+    `);
+    res.json({ success: true, showrooms: rows });
+  } catch (error) {
+    console.error('Erreur showrooms :', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur.' });
+  }
+});
+
+// POST /api/showrooms - Créer un showroom et son gestionnaire
 router.post('/', async (req, res) => {
-  const { nom, ville, adresse, gestionnaire_nom, gestionnaire_email, gestionnaire_password } = req.body;
+  const {
+    nom,
+    ville,
+    adresse,
+    gestionnaire_nom,
+    gestionnaire_email,
+    gestionnaire_password,
+    nom_gestionnaire,
+    email,
+    password,
+  } = req.body;
+  const managerName = gestionnaire_nom || nom_gestionnaire || nom;
+  const managerEmail = gestionnaire_email || email;
+  const managerPassword = gestionnaire_password || password;
 
-  if (!nom || !gestionnaire_email || !gestionnaire_password) {
+  if (!nom || !managerEmail || !managerPassword) {
     return res.status(400).json({ 
       success: false, 
       message: 'Le nom du showroom, l\'email et le mot de passe du gestionnaire sont requis.' 
@@ -20,7 +50,7 @@ router.post('/', async (req, res) => {
     await clientDb.query('BEGIN');
 
     // Step 1 : Vérifier si l'email existe déjà dans utilisateurs
-    const checkUser = await clientDb.query('SELECT id FROM utilisateurs WHERE email = $1', [gestionnaire_email]);
+    const checkUser = await clientDb.query('SELECT id FROM utilisateurs WHERE email = $1', [managerEmail]);
     if (checkUser.rows.length > 0) {
       await clientDb.query('ROLLBACK');
       return res.status(400).json({ success: false, message: 'Cet email est déjà utilisé par un autre compte.' });
@@ -28,7 +58,7 @@ router.post('/', async (req, res) => {
 
     // Step 2 : Hacher le mot de passe
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(gestionnaire_password, saltRounds);
+    const hashedPassword = await bcrypt.hash(managerPassword, saltRounds);
 
     // Step 3 : Insérer le gestionnaire dans la table `utilisateurs`
     const insertUserQuery = `
@@ -37,8 +67,8 @@ router.post('/', async (req, res) => {
       RETURNING id, nom, email, role
     `;
     const userResult = await clientDb.query(insertUserQuery, [
-      gestionnaire_nom || nom,
-      gestionnaire_email,
+      managerName,
+      managerEmail,
       hashedPassword,
       'gestionnaire_showroom' // ou 'technicien' / 'admin' selon ta convention de rôles
     ]);
@@ -73,6 +103,27 @@ router.post('/', async (req, res) => {
     res.status(500).json({ success: false, message: 'Erreur serveur lors de la création.' });
   } finally {
     clientDb.release();
+  }
+});
+
+// POST /api/showrooms/attribuer-produit - Ajouter un produit au stock d'un showroom
+router.post('/attribuer-produit', async (req, res) => {
+  const { showroom_id, produit_id } = req.body;
+  if (!showroom_id || !produit_id) {
+    return res.status(400).json({ success: false, message: 'Le showroom et le produit sont obligatoires.' });
+  }
+
+  try {
+    await db.query(
+      `INSERT INTO showroom_produits (showroom_id, produit_id)
+       VALUES ($1, $2)
+       ON CONFLICT DO NOTHING`,
+      [showroom_id, produit_id]
+    );
+    res.status(201).json({ success: true, message: 'Produit attribué au showroom.' });
+  } catch (error) {
+    console.error('Erreur attribution produit showroom :', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur.' });
   }
 });
 

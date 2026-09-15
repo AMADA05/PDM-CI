@@ -6,13 +6,11 @@ const db = require('../db');
 router.get('/', async (req, res) => {
   try {
     const query = `
-      SELECT u.id, u.nom, u.email, u.telephone, u.ville, u.date_creation, 
-             COALESCE(ARRAY_AGG(r.nom) FILTER (WHERE r.nom IS NOT NULL), '{}') AS roles
+      SELECT u.id, u.nom, u.email, u.telephone, u.ville, u.date_creation,
+             COALESCE(u.role, 'utilisateur') AS role,
+             ARRAY[COALESCE(u.role, 'utilisateur')] AS roles
       FROM utilisateurs u
-      LEFT JOIN utilisateur_roles ur ON u.id = ur.utilisateur_id
-      LEFT JOIN roles r ON ur.role_id = r.id
-      GROUP BY u.id
-      ORDER BY u.date_creation DESC
+      ORDER BY u.date_creation DESC NULLS LAST, u.id DESC
     `;
     const { rows } = await db.query(query);
     res.json({ success: true, utilisateurs: rows });

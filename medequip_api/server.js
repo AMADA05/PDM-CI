@@ -28,6 +28,7 @@ const utilisateursRoutes = require('./routes/utilisateurs');
 const contratsRoutes = require('./routes/contrats_maintenance');
 const clientsRoutes = require('./routes/clients'); // Nouveau router pour la gestion des clients et appareils
 const servicesRoutes = require('./routes/services');
+const projetsRoutes = require('./routes/projets');
 
 
 app.use('/api/auth', authRoutes);
@@ -39,6 +40,7 @@ app.use('/api/utilisateurs', utilisateursRoutes);
 app.use('/api/contrats', contratsRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/services', servicesRoutes);
+app.use('/api/projets', projetsRoutes);
 // Déclaration des endpoints API
 app.get('/', (req, res) => {
   res.json({ message: 'Bienvenue sur l\'API PDM CI / MEDEQUIP CI' });
