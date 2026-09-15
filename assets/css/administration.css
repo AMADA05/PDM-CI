@@ -869,86 +869,176 @@ td {
   }
 }
 /* ==========================================================
-   PHASE 2 — MODALE PRODUITS / CRUD
-   ========================================================== */
-.admin-modal { display:none; position:fixed; inset:0; z-index:9999; }
-.admin-modal.is-open { display:flex; align-items:center; justify-content:center; padding:24px; }
-.admin-modal-backdrop { position:absolute; inset:0; background:rgba(8,25,38,.62); backdrop-filter:blur(4px); }
-.admin-modal-dialog { position:relative; width:min(820px,100%); max-height:92vh; overflow:auto; background:#fff; border-radius:18px; box-shadow:0 24px 70px rgba(0,0,0,.28); }
-.admin-modal-header { display:flex; justify-content:space-between; gap:20px; padding:26px 30px 20px; border-bottom:1px solid #e8edf1; }
-.modal-eyebrow { display:block; font-size:11px; font-weight:800; letter-spacing:1.2px; color:#e87516; margin-bottom:7px; }
-.admin-modal-header h2 { margin:0; font-size:24px; color:#153042; }
-.admin-modal-header p { margin:6px 0 0; color:#6d7c86; font-size:14px; }
-.admin-modal-close { width:38px; height:38px; border:0; border-radius:50%; background:#f1f4f6; color:#173548; font-size:25px; cursor:pointer; flex:0 0 auto; }
-.admin-product-form { padding:26px 30px 30px; }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-.form-grid label { display:flex; flex-direction:column; gap:7px; color:#344b59; font-size:13px; font-weight:700; }
-.form-grid label span b { color:#d54b2e; }
-.form-grid input, .form-grid textarea { width:100%; box-sizing:border-box; border:1px solid #d5dee4; border-radius:10px; padding:12px 13px; font:inherit; font-weight:400; color:#173548; background:#fbfcfd; outline:none; transition:border-color .2s, box-shadow .2s; }
-.form-grid input:focus, .form-grid textarea:focus { border-color:#e87516; box-shadow:0 0 0 3px rgba(232,117,22,.12); background:#fff; }
-.form-grid textarea { resize:vertical; min-height:110px; }
-.form-full { grid-column:1 / -1; }
-.checkbox-field { grid-column:1 / -1; flex-direction:row !important; align-items:center; gap:10px !important; }
-.checkbox-field input { width:18px; height:18px; accent-color:#e87516; }
-.admin-modal-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid #e8edf1; }
-.secondary-button { border:1px solid #d5dee4; background:#fff; color:#344b59; border-radius:9px; padding:11px 18px; cursor:pointer; font-weight:700; }
-.admin-modal-actions .primary-button { border:0; cursor:pointer; }
-.admin-modal-actions button:disabled { opacity:.6; cursor:not-allowed; }
-.form-message { margin-top:16px; padding:11px 13px; border-radius:9px; font-size:13px; font-weight:700; }
-.form-message.success { background:#e9f7ef; color:#187443; }
-.form-message.error { background:#fff0ed; color:#b53b28; }
-.table-loading, .table-empty, .table-error { text-align:center; padding:28px !important; color:#6d7c86; }
-.table-error { color:#b53b28; }
-.productsTable td small, #productsTable td small { display:block; margin-top:4px; color:#84929b; font-size:11px; }
-#productsTable .table-action.danger { color:#b53b28; }
-#productsTable .table-action + .table-action { margin-left:6px; }
+   FORMULAIRES & MODALES (RENDU AMÉLIORÉ & TAILLES RATIONALISÉES)
+========================================================== */
 
-@media (max-width:700px) {
-  .admin-modal.is-open { padding:10px; }
-  .admin-modal-dialog { max-height:96vh; border-radius:14px; }
-  .admin-modal-header, .admin-product-form { padding-left:18px; padding-right:18px; }
-  .form-grid { grid-template-columns:1fr; }
-  .form-full, .checkbox-field { grid-column:1; }
-  .admin-modal-actions { flex-direction:column-reverse; }
-  .admin-modal-actions button { width:100%; }
+/* Bloquer le défilement du fond à l'ouverture */
+body.modal-open { 
+  overflow: hidden; 
 }
 
-/* ==========================================================
-   PHASE 2 — MODALE PRODUIT / POSTGRESQL
-========================================================== */
-body.modal-open { overflow: hidden; }
+/* Conteneur principal de la modale */
+.admin-modal { 
+  display: none; 
+  position: fixed; 
+  inset: 0; 
+  z-index: 1000; 
+}
 
-.admin-modal { display:none; position:fixed; inset:0; z-index:1000; }
-.admin-modal.open { display:block; }
-.admin-modal-overlay { position:absolute; inset:0; background:rgba(23,32,42,.68); backdrop-filter:blur(2px); }
-.admin-modal-content { position:relative; width:min(760px, calc(100% - 30px)); max-height:90vh; overflow-y:auto; margin:5vh auto; padding:0; background:#fff; border-radius:14px; box-shadow:0 25px 70px rgba(0,0,0,.25); }
-.admin-modal-header { display:flex; justify-content:space-between; gap:20px; padding:24px 26px; border-bottom:1px solid var(--border); }
-.modal-eyebrow { display:block; margin-bottom:6px; color:var(--green); font-size:10px; font-weight:800; letter-spacing:.08em; }
-.admin-modal-header h2 { color:var(--dark); font-size:21px; }
-.modal-close { width:36px; height:36px; border:0; border-radius:50%; background:#f3f4f6; color:var(--dark); font-size:25px; line-height:1; cursor:pointer; }
-.product-form { display:grid; gap:18px; padding:26px; }
-.form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
-.product-form label { display:grid; gap:7px; color:var(--dark); font-size:12px; font-weight:700; }
-.product-form label > span { color:var(--orange); }
-.product-form input:not([type="checkbox"]), .product-form textarea { width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:7px; outline:none; background:#fff; color:var(--text); font-size:13px; }
-.product-form input:not([type="checkbox"]):focus, .product-form textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(0,135,90,.08); }
-.product-form textarea { resize:vertical; min-height:105px; }
-.form-checkbox { display:flex !important; grid-template-columns:none !important; align-items:center; gap:9px !important; font-weight:600 !important; }
-.form-checkbox input { width:17px; height:17px; accent-color:var(--green); }
-.form-message { min-height:20px; padding:0; color:var(--muted); font-size:12px; }
-.form-message.error { padding:10px 12px; border-radius:7px; background:#fff1f1; color:#b42318; }
-.modal-actions { display:flex; justify-content:flex-end; gap:10px; padding-top:5px; border-top:1px solid var(--border); }
-.secondary-button { padding:11px 17px; border:1px solid var(--border); border-radius:7px; background:#fff; color:var(--text); font-size:13px; font-weight:700; cursor:pointer; }
-.primary-button:disabled { opacity:.6; cursor:not-allowed; }
-.table-action.danger { margin-left:5px; color:#b42318; }
-.product-reference { display:block; margin-top:4px; color:var(--muted); font-size:10px; }
-.loading-state, .empty-state, .error-state { padding:28px !important; text-align:center !important; color:var(--muted); }
-.error-state { color:#b42318; }
+.admin-modal.open { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 20px; 
+}
 
-@media (max-width:600px) {
-  .admin-modal-content { width:calc(100% - 20px); margin:2vh auto; max-height:96vh; }
-  .admin-modal-header, .product-form { padding:18px; }
-  .form-grid { grid-template-columns:1fr; }
-  .modal-actions { flex-direction:column-reverse; }
-  .modal-actions button { width:100%; }
+/* Arrière-plan assombri et flouté */
+.admin-modal-overlay { 
+  position: absolute; 
+  inset: 0; 
+  background: rgba(15, 23, 42, 0.65); 
+  backdrop-filter: blur(4px); 
+}
+
+/* Fenêtre de la modale */
+.admin-modal-content { 
+  position: relative; 
+  width: 100%; 
+  max-width: 680px; /* Taille optimale pour l'ensemble des formulaires */
+  max-height: 88vh; 
+  overflow-y: auto; 
+  background: #ffffff; 
+  border-radius: 12px; 
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2); 
+  border: 1px solid var(--border);
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header de la modale */
+.admin-modal-header { 
+  display: flex; 
+  align-items: center;
+  justify-content: space-between; 
+  padding: 20px 24px; 
+  background: #fafafa;
+  border-bottom: 1px solid var(--border); 
+}
+
+.admin-modal-header h2 { 
+  color: var(--dark); 
+  font-size: 18px; 
+  font-weight: 700;
+}
+
+.modal-close { 
+  width: 32px; 
+  height: 32px; 
+  border: 0; 
+  border-radius: 6px; 
+  background: #edf0f2; 
+  color: var(--dark); 
+  font-size: 20px; 
+  line-height: 1; 
+  cursor: pointer; 
+  transition: 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--border);
+}
+
+/* Structure des formulaires */
+.admin-modal-content form { 
+  display: flex;
+  flex-direction: column;
+  gap: 16px; 
+  padding: 24px; 
+}
+
+.form-grid { 
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 16px; 
+}
+
+/* Champs et labels */
+.admin-modal-content label { 
+  display: flex; 
+  flex-direction: column;
+  gap: 6px; 
+  color: var(--dark); 
+  font-size: 13px; 
+  font-weight: 600; 
+}
+
+.admin-modal-content input, 
+.admin-modal-content select, 
+.admin-modal-content textarea { 
+  width: 100%; 
+  padding: 10px 12px; 
+  border: 1px solid var(--border); 
+  border-radius: 6px; 
+  outline: none; 
+  background: #fff; 
+  color: var(--text); 
+  font-size: 13px; 
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-modal-content input:focus, 
+.admin-modal-content select:focus, 
+.admin-modal-content textarea:focus { 
+  border-color: var(--orange); 
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.12); 
+}
+
+.admin-modal-content textarea { 
+  resize: vertical; 
+  min-height: 90px; 
+}
+
+/* Actions au bas du formulaire */
+.modal-actions { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 12px; 
+  margin-top: 8px;
+  padding-top: 16px; 
+  border-top: 1px solid var(--border); 
+}
+
+.secondary-button { 
+  padding: 10px 18px; 
+  border: 1px solid var(--border); 
+  border-radius: 6px; 
+  background: #fff; 
+  color: var(--text); 
+  font-size: 13px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: 0.2s;
+}
+
+.secondary-button:hover {
+  background: #f5f7f8;
+}
+
+/* Adaptation Mobile */
+@media (max-width: 640px) {
+  .form-grid { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .modal-actions { 
+    flex-direction: column-reverse; 
+  }
+  
+  .modal-actions button { 
+    width: 100%; 
+  }
 }
