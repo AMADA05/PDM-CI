@@ -113,6 +113,30 @@ async function loadDashboard() {
 // ==========================================================
 // 2. PRODUITS (CRUD + ATTRIBUTION)
 // ==========================================================
+
+// Helper pour afficher une notification de confirmation
+function showNotification(message, isSuccess = true) {
+  const alertBox = document.createElement('div');
+  alertBox.className = `custom-alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
+  alertBox.innerText = message;
+  
+  Object.assign(alertBox.style, {
+    position: 'fixed',
+    top: '20px',
+    right: '20px',
+    padding: '15px 25px',
+    borderRadius: '8px',
+    backgroundColor: isSuccess ? '#2e7d32' : '#d32f2f',
+    color: '#fff',
+    fontWeight: 'bold',
+    zIndex: '10000',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+  });
+
+  document.body.appendChild(alertBox);
+  setTimeout(() => alertBox.remove(), 4000);
+}
+
 async function loadProducts() {
   const tbody = document.querySelector("#productsTable tbody");
   if (!tbody) return;
@@ -170,7 +194,7 @@ function openProductModal(id = null) {
           <label>Catégorie <input name="categorie" value="${escapeHtml(p?.categorie || p?.category || '')}"></label>
           <label>Marque <input name="marque" value="${escapeHtml(p?.marque || '')}"></label>
           <label>Modèle <input name="modele" value="${escapeHtml(p?.modele || '')}"></label>
-          <label>Prix (FCFA) * <input name="prix" type="number" required value="${p?.prix || 0}"></label>
+          <label>Prix (FCFA) * <input name="prix" type="number" step="0.01" required value="${p?.prix || 0}"></label>
         </div>
         <label>Description <textarea name="description">${escapeHtml(p?.description || '')}</textarea></label>
         <label>URL Image <input name="image_url" value="${escapeHtml(p?.image_url || '')}"></label>
@@ -186,14 +210,33 @@ function openProductModal(id = null) {
   document.getElementById("productForm").onsubmit = async (e) => {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(e.target).entries());
+    
+    // Conversion explicite du prix en chiffre pour PostgreSQL
+    payload.prix = Number(payload.prix) || 0;
     payload.actif = true;
 
     const url = p ? `${API_PRODUITS}/${p.id}` : API_PRODUITS;
     const method = p ? "PUT" : "POST";
 
-    await fetch(url, { method, headers: apiHeaders(), body: JSON.stringify(payload) });
-    closeModal();
-    loadProducts();
+    try {
+      const res = await fetch(url, { 
+        method, 
+        headers: apiHeaders(), 
+        body: JSON.stringify(payload) 
+      });
+
+      if (res.ok) {
+        showNotification(p ? "✅ Produit mis à jour avec succès !" : "✅ Produit ajouté avec succès dans la base de données !");
+        closeModal();
+        loadProducts();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        showNotification(`❌ Erreur : ${errData.error || errData.message || 'Impossible d\'enregistrer le produit.'}`, false);
+      }
+    } catch (err) {
+      console.error("Erreur lors de l'enregistrement du produit:", err);
+      showNotification("❌ Erreur réseau / serveur.", false);
+    }
   };
 }
 
@@ -201,7 +244,6 @@ async function openAssignModal(productId) {
   const product = cacheData.produits.find(p => String(p.id) === String(productId));
   if (!product) return;
 
-  // Charger les showrooms et clients
   const [sRes, cRes] = await Promise.all([
     fetch(API_SHOWROOMS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({ showrooms: [] })),
     fetch(API_CLIENTS, { headers: apiHeaders() }).then(r => r.json()).catch(() => ({ clients: [] }))
@@ -262,9 +304,17 @@ async function openAssignModal(productId) {
       ? `${API_SHOWROOMS}/attribuer-produit` 
       : `${API_CLIENTS}/attribuer-equipement`;
 
-    await fetch(endpoint, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
-    alert("Attribution enregistrée avec succès !");
-    closeModal();
+    try {
+      const res = await fetch(endpoint, { method: "POST", headers: apiHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) {
+        showNotification("✅ Attribution enregistrée avec succès !");
+        closeModal();
+      } else {
+        showNotification("❌ Erreur lors de l'attribution du produit.", false);
+      }
+    } catch (err) {
+      showNotification("❌ Erreur serveur lors de l'attribution.", false);
+    }
   };
 }
 
@@ -275,8 +325,17 @@ function toggleAssignSelects(val) {
 
 async function deleteProduct(id) {
   if (!confirm("Confirmer la suppression de cet équipement ?")) return;
-  await fetch(`${API_PRODUITS}/${id}`, { method: "DELETE", headers: apiHeaders() });
-  loadProducts();
+  try {
+    const res = await fetch(`${API_PRODUITS}/${id}`, { method: "DELETE", headers: apiHeaders() });
+    if (res.ok) {
+      showNotification("✅ Produit supprimé avec succès !");
+      loadProducts();
+    } else {
+      showNotification("❌ Erreur lors de la suppression.", false);
+    }
+  } catch (err) {
+    showNotification("❌ Erreur réseau lors de la suppression.", false);
+  }
 }
 
 // ==========================================================
@@ -483,6 +542,113 @@ async function loadActualites() {
     `).join("");
   } catch (err) {
     container.innerHTML = `<p>Erreur chargement actualités.</p>`;
+  }
+}
+// Gestion de la modale
+function closeModal() {
+  document.getElementById('modalForm').style.display = 'none';
+}
+
+// 1. Formulaire d'ajout de Service
+document.getElementById('btnAddService')?.addEventListener('click', () => {
+  document.getElementById('modalTitle').textContent = 'Ajouter un Service';
+  document.getElementById('formFields').innerHTML = `
+    <label>Nom du service</label>
+    <input type="text" id="serviceNom" required />
+    <label>Description</label>
+    <textarea id="serviceDesc" required></textarea>
+    <label>Icône (ex: fa-tools)</label>
+    <input type="text" id="serviceIcone" />
+  `;
+  
+  document.getElementById('dynamicForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      nom: document.getElementById('serviceNom').value,
+      description: document.getElementById('serviceDesc').value,
+      icone: document.getElementById('serviceIcone').value
+    };
+    await sendData('/api/services', 'POST', data);
+  };
+  
+  document.getElementById('modalForm').style.display = 'block';
+});
+
+// 2. Formulaire d'ajout d'Actualité
+document.getElementById('btnAddNews')?.addEventListener('click', () => {
+  document.getElementById('modalTitle').textContent = 'Ajouter une Actualité';
+  document.getElementById('formFields').innerHTML = `
+    <label>Titre</label>
+    <input type="text" id="newsTitre" required />
+    <label>Contenu</label>
+    <textarea id="newsContenu" required></textarea>
+    <label>URL de l'image</label>
+    <input type="text" id="newsImage" />
+  `;
+  
+  document.getElementById('dynamicForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      titre: document.getElementById('newsTitre').value,
+      contenu: document.getElementById('newsContenu').value,
+      image_url: document.getElementById('newsImage').value
+    };
+    await sendData('/api/actualites', 'POST', data);
+  };
+  
+  document.getElementById('modalForm').style.display = 'block';
+});
+
+// 3. Formulaire d'ajout d'Utilisateur
+document.getElementById('btnAddUser')?.addEventListener('click', () => {
+  document.getElementById('modalTitle').textContent = 'Ajouter un Utilisateur';
+  document.getElementById('formFields').innerHTML = `
+    <label>Nom complet</label>
+    <input type="text" id="userNom" required />
+    <label>Email</label>
+    <input type="email" id="userEmail" required />
+    <label>Mot de passe</label>
+    <input type="password" id="userPassword" required />
+    <label>Rôle</label>
+    <select id="userRole">
+      <option value="technicien">Technicien</option>
+      <option value="admin">Administrateur</option>
+      <option value="client">Client</option>
+    </select>
+  `;
+  
+  document.getElementById('dynamicForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      nom: document.getElementById('userNom').value,
+      email: document.getElementById('userEmail').value,
+      mot_de_passe: document.getElementById('userPassword').value,
+      role: document.getElementById('userRole').value
+    };
+    await sendData('/api/utilisateurs', 'POST', data);
+  };
+  
+  document.getElementById('modalForm').style.display = 'block';
+});
+
+// Fonction générique d'envoi API
+async function sendData(url, method, bodyData) {
+  try {
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyData)
+    });
+    if (res.ok) {
+      alert('Enregistré avec succès !');
+      closeModal();
+      location.reload();
+    } else {
+      alert('Erreur lors de l\'enregistrement.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Erreur réseau.');
   }
 }
 

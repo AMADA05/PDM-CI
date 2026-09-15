@@ -323,7 +323,17 @@
 
   <!-- MODALE GENERIQUE ADMIN -->
   <div id="adminModal" class="admin-modal" aria-hidden="true"></div>
-
+    <!-- Modale d'ajout/modification dynamique -->
+    <div id="modalForm" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Ajouter</h2>
+        <form id="dynamicForm">
+          <div id="formFields"></div>
+          <button type="submit" class="btn-submit">Enregistrer</button>
+        </form>
+      </div>
+   </div>
   <!-- SCRIPTS -->
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/administration.js"></script>
