@@ -189,7 +189,7 @@ function openProductModal(id = null) {
       </div>
       <form id="productForm">
         <div class="form-grid">
-          <label>Référence <input name="reference" value="${escapeHtml(p?.reference || '')}"></label>
+          <label>Référence <input name="reference" value="${escapeHtml(p?.reference || '')}" placeholder="Ex: REF-1001"></label>
           <label>Nom * <input name="nom" required value="${escapeHtml(p?.nom || p?.name || '')}"></label>
           <label>Catégorie <input name="categorie" value="${escapeHtml(p?.categorie || p?.category || '')}"></label>
           <label>Marque <input name="marque" value="${escapeHtml(p?.marque || '')}"></label>
@@ -209,33 +209,38 @@ function openProductModal(id = null) {
 
   document.getElementById("productForm").onsubmit = async (e) => {
     e.preventDefault();
-    const payload = Object.fromEntries(new FormData(e.target).entries());
     
-    // Conversion explicite du prix en chiffre pour PostgreSQL
-    payload.prix = Number(payload.prix) || 0;
-    payload.actif = true;
+    // Construction propre des données du formulaire
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData.entries());
+    payload.prix = parseFloat(payload.prix) || 0;
 
     const url = p ? `${API_PRODUITS}/${p.id}` : API_PRODUITS;
     const method = p ? "PUT" : "POST";
 
     try {
-      const res = await fetch(url, { 
-        method, 
-        headers: apiHeaders(), 
-        body: JSON.stringify(payload) 
+      const res = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          ...apiHeaders() // Inclut l'autorisation / token si présent
+        },
+        body: JSON.stringify(payload)
       });
 
-      if (res.ok) {
-        showNotification(p ? "✅ Produit mis à jour avec succès !" : "✅ Produit ajouté avec succès dans la base de données !");
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        showNotification(data.message || "✅ Opération réussie !");
         closeModal();
-        loadProducts();
+        await loadProducts(); // Rafraîchit le tableau directement
       } else {
-        const errData = await res.json().catch(() => ({}));
-        showNotification(`❌ Erreur : ${errData.error || errData.message || 'Impossible d\'enregistrer le produit.'}`, false);
+        // Affiche le message d'erreur exact renvoyé par PostgreSQL/Express
+        showNotification(`❌ ${data.message || 'Erreur lors de l\'enregistrement'}`, false);
       }
     } catch (err) {
-      console.error("Erreur lors de l'enregistrement du produit:", err);
-      showNotification("❌ Erreur réseau / serveur.", false);
+      console.error("Erreur Fetch Product:", err);
+      showNotification("❌ Impossible de contacter le serveur backend.", false);
     }
   };
 }

@@ -2,41 +2,122 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// POST : Ajouter un produit
+// POST : Ajouter un produit avec logs d'erreur détaillés
 router.post('/', async (req, res) => {
-  const { nom, description, prix, stock, categorie, image_url } = req.body;
-
-  // Validation minimale
-  if (!nom || prix === undefined) {
-    return res.status(400).json({ success: false, error: 'Le nom et le prix sont obligatoires.' });
-  }
+  console.log('Payload reçu sur POST /api/produits :', req.body);
 
   try {
+    const { reference, nom, categorie, marque, modele, prix, description, image_url } = req.body;
+
+    // Validation des champs indispensables
+    const nomProduit = nom || req.body.name;
+    if (!nomProduit) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Le champ "Nom" du produit est obligatoire.' 
+      });
+    }
+
+    // Requête SQL sécurisée avec valeurs par défaut
     const query = `
-      INSERT INTO produits (nom, description, prix, stock, categorie, image_url)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO produits (
+        reference, 
+        nom, 
+        categorie, 
+        marque, 
+        modele, 
+        prix, 
+        description, 
+        image_url, 
+        actif
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
       RETURNING *
     `;
+
     const values = [
-      nom,
-      description || '',
-      parseFloat(prix),
-      parseInt(stock) || 0,
+      reference || `REF-${Date.now().toString().slice(-6)}`, // Génère une réf si vide
+      nomProduit,
       categorie || 'Général',
+      marque || '',
+      modele || '',
+      isNaN(parseFloat(prix)) ? 0 : parseFloat(prix),
+      description || '',
       image_url || ''
     ];
 
     const result = await db.query(query, values);
 
-    // Retourne un statut 201 avec le produit créé
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: 'Produit ajouté avec succès !',
-      produit: result.rows[0]
+      message: 'Produit ajouté avec succès dans la base de données !',
+      product: result.rows[0]
     });
+
   } catch (err) {
-    console.error('Erreur lors de l\'ajout du produit :', err);
-    res.status(500).json({ success: false, error: 'Erreur serveur lors de la création du produit.' });
+    // Affiche l'erreur exacte PostgreSQL dans le terminal
+    console.error('❌ ERREUR POSTGRESQL POST /api/produits :', err.message);
+
+    return res.status(500).json({ 
+      success: false, 
+      message: `Erreur BD (${err.code || 'SQL'}) : ${err.message}` 
+    });
+  }
+});
+
+// PUT : Modifier un produit
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Payload reçu sur PUT /api/produits/${id} :`, req.body);
+
+  try {
+    const { reference, nom, categorie, marque, modele, prix, description, image_url } = req.body;
+
+    const query = `
+      UPDATE produits 
+      SET 
+        reference = COALESCE($1, reference), 
+        nom = $2, 
+        categorie = $3, 
+        marque = $4, 
+        modele = $5, 
+        prix = $6, 
+        description = $7, 
+        image_url = $8
+      WHERE id = $9
+      RETURNING *
+    `;
+
+    const values = [
+      reference || null,
+      nom || req.body.name,
+      categorie || 'Général',
+      marque || '',
+      modele || '',
+      isNaN(parseFloat(prix)) ? 0 : parseFloat(prix),
+      description || '',
+      image_url || '',
+      id
+    ];
+
+    const result = await db.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Produit introuvable.' });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Produit mis à jour avec succès !',
+      product: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error(`❌ ERREUR POSTGRESQL PUT /api/produits/${id} :`, err.message);
+    return res.status(500).json({ 
+      success: false, 
+      message: `Erreur BD (${err.code || 'SQL'}) : ${err.message}` 
+    });
   }
 });
 
