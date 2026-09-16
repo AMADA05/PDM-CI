@@ -14,9 +14,7 @@ function deconnexion() {
 // ==========================================================
 // 1. CONFIGURATION DE L'API
 // ==========================================================
-const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-  ? "http://localhost:5000"
-  : "https://pdm-ci.onrender.com";
+const API_BASE_URL = (window.PDM_CONFIG && window.PDM_CONFIG.API_BASE_URL) || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : 'https://pdm-ci.onrender.com');
 
 const API_URL = `${API_BASE_URL}/api/auth`;
 const API_AUTH_URL = API_URL; // <--- Ajoute cette ligne pour que API_AUTH_URL soit bien définie
@@ -132,12 +130,11 @@ loginForm?.addEventListener("submit", async function (event) {
     showMessage("Connexion réussie ! Redirection...", "success");
 
     setTimeout(() => {
-      // Redirection si admin ou utilisateur standard
-      if (user?.email === "admin@pdmci.com" || user?.role === "administrateur" || user?.role === "admin") {
-        window.location.href = "administration.html";
-      } else {
-        window.location.href = "../index.html";
-      }
+      const roles = Array.isArray(user?.roles) ? user.roles.map(r => String(r).toLowerCase()) : [String(user?.role || '').toLowerCase()];
+      const isAdmin = user?.email?.toLowerCase() === 'admin@pdmci.com' || roles.some(r => r.includes('admin'));
+      const isManager = roles.some(r => r.includes('gestionnaire'));
+      const isClient = roles.some(r => r.includes('client'));
+      window.location.href = isAdmin ? 'administration.html' : isManager ? 'espace-showroom.html' : isClient ? 'espace-client.html' : '../index.html';
     }, 600);
 
   } catch (error) {
@@ -211,14 +208,7 @@ registerForm?.addEventListener("submit", async function (event) {
     const PATH_PREFIX = IS_GITHUB_PAGES ? '/PDM-CI' : '';
 
 setTimeout(() => {
-  const roles = user?.roles || (user?.role ? [user.role] : []);
-  const isAdmin = roles.some(r => String(r).toLowerCase().includes("admin")) || user?.email === "admin@pdmci.com";
-
-  if (isAdmin) {
-    window.location.href = `${PATH_PREFIX}/pages/administration.html`;
-  } else {
-    window.location.href = `${PATH_PREFIX}/index.html`;
-  }
+  window.location.href = `${PATH_PREFIX}/pages/authentification.html`;
 }, 600);
 
   } catch (error) {

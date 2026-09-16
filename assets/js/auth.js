@@ -97,9 +97,9 @@ const Auth = {
     const isAdminEmail = user?.email?.toLowerCase() === "admin@pdmci.com";
     const hasAdminRole = roles.some(role => role.includes("admin") || role.includes("administrateur"));
 
-    if (isAdminEmail || hasAdminRole) {
-      return `${PATH_PREFIX}/pages/administration.html`;
-    }
+    if (isAdminEmail || hasAdminRole) return `${PATH_PREFIX}/pages/administration.html`;
+    if (roles.some(role => role.includes('gestionnaire'))) return `${PATH_PREFIX}/pages/espace-showroom.html`;
+    if (roles.some(role => role.includes('client'))) return `${PATH_PREFIX}/pages/espace-client.html`;
     return `${PATH_PREFIX}/index.html`;
   },
 

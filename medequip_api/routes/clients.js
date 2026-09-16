@@ -1,103 +1,49 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
+const router = express.Router();
 const db = require('../db');
 
-const router = express.Router();
-
-// GET /api/clients - Clients et nombre d'équipements installés
+// Clients — version de base compatible avec la table clients utilisée par PDM-CI.
 router.get('/', async (req, res) => {
   try {
     const { rows } = await db.query(`
       SELECT c.*, COUNT(e.id)::int AS nb_equipements
       FROM clients c
       LEFT JOIN equipements e ON e.client_id = c.id
-      GROUP BY c.id
-      ORDER BY c.nom ASC
+      GROUP BY c.id ORDER BY c.id DESC
     `);
-    res.json({ success: true, clients: rows });
-  } catch (error) {
-    console.error('Erreur clients :', error);
-    res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    res.json({ success:true, clients:rows });
+  } catch (err) {
+    console.error('GET /api/clients:', err.message);
+    res.status(500).json({ success:false, message:`Erreur BD : ${err.message}` });
   }
 });
 
-// POST /api/clients - Ajouter un client et son compte utilisateur
-router.post('/', async (req, res) => {
-  const { nom, type_etablissement, telephone, ville, email, password, mot_de_passe } = req.body;
-  if (!nom || !telephone || !ville || !email || !(password || mot_de_passe)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Le nom, le téléphone, la ville, l’email et le mot de passe sont obligatoires.',
-    });
-  }
-
-  const clientDb = await db.connect();
+router.get('/:id/equipements', async (req,res) => {
   try {
-    await clientDb.query('BEGIN');
-    const existing = await clientDb.query('SELECT id FROM utilisateurs WHERE email = $1', [email]);
-    if (existing.rows.length > 0) {
-      await clientDb.query('ROLLBACK');
-      return res.status(400).json({ success: false, message: 'Cet email est déjà utilisé.' });
-    }
-
-    const hash = await bcrypt.hash(password || mot_de_passe, 10);
-    const user = await clientDb.query(`
-      INSERT INTO utilisateurs (nom, email, mot_de_passe, role, telephone, ville)
-      VALUES ($1, $2, $3, 'client', $4, $5)
-      RETURNING id, nom, email
-    `, [nom, email, hash, telephone, ville]);
-
-    const client = await clientDb.query(`
-      INSERT INTO clients (nom, type_etablissement, telephone, ville, email, utilisateur_id)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *
-    `, [nom, type_etablissement || '', telephone, ville, email, user.rows[0].id]);
-
-    await clientDb.query('COMMIT');
-    res.status(201).json({ success: true, client: client.rows[0], utilisateur: user.rows[0] });
-  } catch (error) {
-    await clientDb.query('ROLLBACK');
-    console.error('Erreur création client :', error);
-    res.status(500).json({ success: false, message: 'Erreur serveur.' });
-  } finally {
-    clientDb.release();
-  }
+    const { rows } = await db.query('SELECT * FROM equipements WHERE client_id=$1 ORDER BY id DESC',[req.params.id]);
+    res.json({success:true,equipements:rows});
+  } catch(err) { res.status(500).json({success:false,message:`Erreur BD : ${err.message}`}); }
 });
 
-// GET /api/clients/:id/equipements - Équipements installés chez un client
-router.get('/:id/equipements', async (req, res) => {
+router.post('/', async (req,res) => {
   try {
+    const { nom, email, telephone, ville, adresse, type_etablissement } = req.body;
+    if (!nom) return res.status(400).json({success:false,message:'Le nom du client est obligatoire.'});
     const { rows } = await db.query(`
-      SELECT e.*, p.nom AS nom_produit
-      FROM equipements e
-      LEFT JOIN produits p ON p.id = e.produit_id
-      WHERE e.client_id = $1
-      ORDER BY e.date_attribution DESC NULLS LAST
-    `, [req.params.id]);
-    res.json({ success: true, equipements: rows });
-  } catch (error) {
-    console.error('Erreur équipements client :', error);
-    res.status(500).json({ success: false, message: 'Erreur serveur.' });
-  }
+      INSERT INTO clients (nom,email,telephone,ville,adresse,type_etablissement)
+      VALUES ($1,$2,$3,$4,$5,$6) RETURNING *
+    `,[nom,email || null,telephone || null,ville || null,adresse || null,type_etablissement || 'Établissement']);
+    res.status(201).json({success:true,message:'Client ajouté.',client:rows[0]});
+  } catch(err) { res.status(500).json({success:false,message:`Erreur BD : ${err.message}`}); }
 });
 
-// POST /api/clients/attribuer-equipement - Installer un produit chez un client
-router.post('/attribuer-equipement', async (req, res) => {
-  const { client_id, produit_id, numero_serie } = req.body;
-  if (!client_id || !produit_id || !numero_serie) {
-    return res.status(400).json({ success: false, message: 'Le client, le produit et le numéro de série sont obligatoires.' });
-  }
+router.post('/attribuer-equipement', async (req,res) => {
   try {
-    const { rows } = await db.query(`
-      INSERT INTO equipements (client_id, produit_id, numero_serie)
-      VALUES ($1, $2, $3)
-      RETURNING *
-    `, [client_id, produit_id, numero_serie]);
-    res.status(201).json({ success: true, equipement: rows[0] });
-  } catch (error) {
-    console.error('Erreur attribution équipement :', error);
-    res.status(500).json({ success: false, message: 'Erreur serveur.' });
-  }
+    const { client_id, produit_id, numero_serie } = req.body;
+    if (!client_id || !produit_id || !numero_serie) return res.status(400).json({success:false,message:'Client, produit et numéro de série sont requis.'});
+    const { rows } = await db.query(`INSERT INTO equipements (client_id,produit_id,numero_serie) VALUES ($1,$2,$3) RETURNING *`,[client_id,produit_id,numero_serie]);
+    res.status(201).json({success:true,message:'Équipement attribué.',equipement:rows[0]});
+  } catch(err) { res.status(500).json({success:false,message:`Erreur BD : ${err.message}`}); }
 });
 
 module.exports = router;
