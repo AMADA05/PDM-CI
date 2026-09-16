@@ -14,7 +14,7 @@ router.post('/login', async (req, res) => {
     }
 
     // 1. Chercher l'utilisateur dans la base
-    const { rows } = await db.query('SELECT * FROM utilisateurs WHERE email = $1', [email]);
+    const { rows } = await db.query('SELECT u.*, COALESCE(ARRAY_AGG(r.nom) FILTER (WHERE r.nom IS NOT NULL), '{}') AS roles FROM utilisateurs u LEFT JOIN utilisateur_roles ur ON u.id=ur.utilisateur_id LEFT JOIN roles r ON ur.role_id=r.id WHERE u.email = $1 GROUP BY u.id', [email]);
     if (rows.length === 0) {
       return res.status(400).json({ erreur: 'Email ou mot de passe incorrect.' });
     }
@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
 
     // 3. Générer le jeton JWT
     const token = jwt.sign(
-      { id: utilisateur.id, email: utilisateur.email, role: utilisateur.role || 'utilisateur' },
+      { id: utilisateur.id, email: utilisateur.email },
       process.env.JWT_SECRET || 'secret_key_de_secours',
       { expiresIn: '24h' }
     );
@@ -42,7 +42,8 @@ router.post('/login', async (req, res) => {
         id: utilisateur.id,
         nom: utilisateur.nom,
         email: utilisateur.email,
-        role: utilisateur.role || 'utilisateur'
+        role: utilisateur.role || (utilisateur.roles && utilisateur.roles[0]) || 'client',
+        roles: utilisateur.roles || []
       }
     });
   } catch (err) {
@@ -67,7 +68,7 @@ router.post('/inscription', async (req, res) => {
     }
 
     // Vérifier si l'utilisateur existe déjà
-    const userExist = await db.query('SELECT * FROM utilisateurs WHERE email = $1', [email]);
+    const userExist = await db.query('SELECT u.*, COALESCE(ARRAY_AGG(r.nom) FILTER (WHERE r.nom IS NOT NULL), '{}') AS roles FROM utilisateurs u LEFT JOIN utilisateur_roles ur ON u.id=ur.utilisateur_id LEFT JOIN roles r ON ur.role_id=r.id WHERE u.email = $1 GROUP BY u.id', [email]);
     if (userExist.rows.length > 0) {
       return res.status(400).json({ erreur: 'Un compte existe déjà avec cet email.' });
     }

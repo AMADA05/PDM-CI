@@ -36,10 +36,6 @@
           <span class="nav-icon">🏥</span>
           <span>Clients & Équipements</span>
         </button>
-        <button class="nav-item" data-section="projets">
-          <span class="nav-icon">◈</span>
-          <span>Projets réalisés</span>
-        </button>
         <button class="nav-item" data-section="services">
           <span class="nav-icon">⚙</span>
           <span>Services</span>
@@ -213,18 +209,6 @@
           </div>
         </section>
 
-        <!-- PROJETS -->
-        <section class="admin-section" id="section-projets">
-          <div class="section-heading">
-            <div>
-              <h2>Projets réalisés</h2>
-              <p>Publiez les installations et réalisations présentées sur le site.</p>
-            </div>
-            <button class="primary-button" id="btnAddProject">+ Ajouter un projet</button>
-          </div>
-          <div class="content-cards" id="projectsContainer"><!-- Dynamic --></div>
-        </section>
-
         <!-- SERVICES -->
         <section class="admin-section" id="section-services">
           <div class="section-heading">
@@ -342,7 +326,7 @@
     <!-- Modale d'ajout/modification dynamique -->
     <div id="modalForm" class="modal" style="display:none;">
       <div class="modal-content">
-        <span class="close-btn" onclick="closeLegacyModal()">&times;</span>
+        <span class="close-btn" onclick="closeModal()">&times;</span>
         <h2 id="modalTitle">Ajouter</h2>
         <form id="dynamicForm">
           <div id="formFields"></div>
@@ -351,6 +335,7 @@
       </div>
    </div>
   <!-- SCRIPTS -->
+  <script src="../assets/js/config.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/administration.js"></script>
 
